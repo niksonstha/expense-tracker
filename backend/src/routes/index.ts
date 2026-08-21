@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { db } from '../db/index.js';
-import { sql } from 'drizzle-orm';
+import authRoutes from './auth.routes.js';
 
 const router = Router();
 
@@ -11,13 +10,6 @@ router.get('/', (_req, res) => {
   });
 });
 
-router.get('/db-test', async (_req, res) => {
-  const result = await db.execute(sql`SELECT 1`);
-
-  res.json({
-    database: 'connected',
-    result,
-  });
-});
+router.use('/auth', authRoutes);
 
 export default router;
