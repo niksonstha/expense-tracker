@@ -1,3 +1,4 @@
+import { AppError } from '../errors/app-error.js';
 import {
   createUser,
   findUserByEmail,
@@ -12,7 +13,11 @@ export async function registerUser(data: {
   const existingUser = await findUserByEmail(data.email);
 
   if (existingUser) {
-    throw new Error('EMAIL_ALREADY_EXISTS');
+    throw new AppError(
+      'A user with this email already exists',
+      409,
+      'EMAIL_ALREADY_EXISTS',
+    );
   }
 
   const passwordHash = await hashPassword(data.password);

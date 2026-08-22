@@ -1,5 +1,6 @@
 import express from 'express';
 import apiRouter from './routes/index.js';
+import { errorHandler } from './middleware/error-handler.js';
 
 const app = express();
 
@@ -13,13 +14,6 @@ app.get('/health', (_req, res) => {
   });
 });
 
-app.use((_req, res) => {
-  res.status(404).json({
-    error: {
-      code: 'NOT_FOUND',
-      message: 'Route not found',
-    },
-  });
-});
+app.use(errorHandler);
 
 export default app;
