@@ -89,7 +89,6 @@ export async function updateAccount(
   const { id } = req.params;
 
   const data = updateAccountSchema.parse(req.body);
-  console.log(data);
 
   const account = await updateUserAccount(id, req.userId, data);
 
