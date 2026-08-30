@@ -58,9 +58,20 @@ export async function getTransactions(req: Request, res: Response) {
 
   const filters = transactionQuerySchema.parse(req.query);
 
-  const transactions = await getUserTransactions(req.userId, filters);
+  const result = await getUserTransactions(req.userId, filters);
+
+  const totalPages = Math.ceil(result.total / filters.limit);
 
   return res.status(200).json({
-    transactions,
+    transactions: result.data,
+
+    pagination: {
+      page: filters.page,
+      limit: filters.limit,
+      total: result.total,
+      totalPages,
+      hasNextPage: filters.page < totalPages,
+      hasPreviousPage: filters.page > 1,
+    },
   });
 }

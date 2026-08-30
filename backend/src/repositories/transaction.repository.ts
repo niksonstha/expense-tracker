@@ -1,4 +1,4 @@
-import { and, eq, gte, lte } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, lte } from 'drizzle-orm';
 
 import { db } from '../db/index.js';
 import { transactions } from '../db/schema.js';
@@ -26,6 +26,9 @@ export async function findTransactionsByUserId(
     type?: 'INCOME' | 'EXPENSE' | 'TRANSFER';
     from?: Date;
     to?: Date;
+    page: number;
+    limit: number;
+    sort: 'asc' | 'desc';
   },
 ) {
   const conditions = [eq(transactions.userId, userId)];
@@ -50,9 +53,34 @@ export async function findTransactionsByUserId(
     conditions.push(lte(transactions.transactionDate, filters.to));
   }
 
-  return db
-    .select()
-    .from(transactions)
-    .where(and(...conditions))
-    .orderBy(transactions.transactionDate);
+  const offset = (filters.page - 1) * filters.limit;
+
+  const order =
+    filters.sort === 'asc'
+      ? asc(transactions.transactionDate)
+      : desc(transactions.transactionDate);
+
+  const whereClause = and(...conditions);
+
+  const [data, totalResult] = await Promise.all([
+    db
+      .select()
+      .from(transactions)
+      .where(whereClause)
+      .orderBy(order)
+      .limit(filters.limit)
+      .offset(offset),
+
+    db
+      .select({
+        count: count(),
+      })
+      .from(transactions)
+      .where(whereClause),
+  ]);
+
+  return {
+    data,
+    total: totalResult[0]?.count ?? 0,
+  };
 }

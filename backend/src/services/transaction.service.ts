@@ -69,7 +69,23 @@ export async function getUserTransactions(
     type?: 'INCOME' | 'EXPENSE' | 'TRANSFER';
     from?: Date;
     to?: Date;
+    page: number;
+    limit: number;
+    sort: 'asc' | 'desc';
   },
 ) {
-  return findTransactionsByUserId(userId, filters);
+  function endOfDay(date: Date) {
+    const result = new Date(date);
+
+    result.setHours(23, 59, 59, 999);
+
+    return result;
+  }
+
+  const normalizedFilters = {
+    ...filters,
+
+    to: filters.to ? endOfDay(filters.to) : undefined,
+  };
+  return findTransactionsByUserId(userId, normalizedFilters);
 }
