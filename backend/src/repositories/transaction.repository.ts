@@ -84,3 +84,59 @@ export async function findTransactionsByUserId(
     total: totalResult[0]?.count ?? 0,
   };
 }
+
+export async function findTransactionById(
+  transactionId: string,
+  userId: string,
+) {
+  const result = await db
+    .select()
+    .from(transactions)
+    .where(
+      and(eq(transactions.id, transactionId), eq(transactions.userId, userId)),
+    )
+    .limit(1);
+
+  return result[0] ?? null;
+}
+
+export async function updateTransactionById(
+  transactionId: string,
+  userId: string,
+  data: {
+    accountId?: string;
+    categoryId?: string | null;
+    type?: 'INCOME' | 'EXPENSE';
+    direction?: 'IN' | 'OUT';
+    amount?: string;
+    description?: string | null;
+    transactionDate?: Date;
+  },
+) {
+  const result = await db
+    .update(transactions)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(eq(transactions.id, transactionId), eq(transactions.userId, userId)),
+    )
+    .returning();
+
+  return result[0] ?? null;
+}
+
+export async function deleteTransactionById(
+  transactionId: string,
+  userId: string,
+) {
+  const result = await db
+    .delete(transactions)
+    .where(
+      and(eq(transactions.id, transactionId), eq(transactions.userId, userId)),
+    )
+    .returning();
+
+  return result[0] ?? null;
+}

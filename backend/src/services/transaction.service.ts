@@ -3,6 +3,9 @@ import { findAccountById } from '../repositories/account.repository.js';
 import { findCategoryById } from '../repositories/category.repository.js';
 
 import {
+  deleteTransactionById,
+  updateTransactionById,
+  findTransactionById,
   findTransactionsByUserId,
   createTransaction,
 } from '../repositories/transaction.repository.js';
@@ -88,4 +91,95 @@ export async function getUserTransactions(
     to: filters.to ? endOfDay(filters.to) : undefined,
   };
   return findTransactionsByUserId(userId, normalizedFilters);
+}
+
+export async function getUserTransaction(
+  transactionId: string,
+  userId: string,
+) {
+  return findTransactionById(transactionId, userId);
+}
+
+export async function updateUserTransaction(
+  transactionId: string,
+  userId: string,
+  data: {
+    accountId?: string;
+    categoryId?: string | null;
+    type?: 'INCOME' | 'EXPENSE';
+    amount?: number;
+    description?: string | null;
+    transactionDate?: Date;
+  },
+) {
+  const existing = await findTransactionById(transactionId, userId);
+
+  if (!existing) {
+    return {
+      error: 'TRANSACTION_NOT_FOUND',
+    };
+  }
+
+  if (data.accountId) {
+    const account = await findAccountById(data.accountId, userId);
+
+    if (!account) {
+      return {
+        error: 'ACCOUNT_NOT_FOUND',
+      };
+    }
+  }
+
+  if (data.categoryId) {
+    const category = await findCategoryById(data.categoryId, userId);
+
+    if (!category) {
+      return {
+        error: 'CATEGORY_NOT_FOUND',
+      };
+    }
+
+    const transactionType = data.type ?? existing.type;
+
+    if (category.type !== transactionType) {
+      return {
+        error: 'CATEGORY_TYPE_MISMATCH',
+      };
+    }
+  }
+
+  if (data.type && data.categoryId === undefined && existing.categoryId) {
+    const category = await findCategoryById(existing.categoryId, userId);
+
+    if (category && category.type !== data.type) {
+      return {
+        error: 'CATEGORY_TYPE_MISMATCH',
+      };
+    }
+  }
+
+  const type = data.type ?? existing.type;
+
+  const direction = type === 'INCOME' ? 'IN' : 'OUT';
+
+  return {
+    transaction: await updateTransactionById(transactionId, userId, {
+      ...data,
+      amount: data.amount !== undefined ? data.amount.toFixed(2) : undefined,
+      direction,
+    }),
+  };
+}
+
+export async function deleteUserTransaction(
+  transactionId: string,
+  userId: string,
+) {
+  const transaction = await deleteTransactionById(transactionId, userId);
+
+  if (!transaction) {
+    return null;
+  }
+
+  return transaction;
 }
