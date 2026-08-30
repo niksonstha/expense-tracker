@@ -5,6 +5,8 @@ import accountRoutes from './account.routes.js';
 import categoryRoutes from './category.routes.js';
 import transactionRoutes from './transaction.routes.js';
 import transferRoutes from './transfer.routes.js';
+import summaryRoutes from './summary.routes.js';
+import dashboardRoutes from './dashboard.routes.js';
 
 const router = Router();
 
@@ -21,5 +23,7 @@ router.use('/account', accountRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/transactions', transactionRoutes);
 router.use('/transfers', transferRoutes);
+router.use('/summary', summaryRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 export default router;
