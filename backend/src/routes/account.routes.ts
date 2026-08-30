@@ -4,6 +4,7 @@ import {
   createAccount,
   deleteAccount,
   getAccount,
+  getAccountBalanceController,
   getAccounts,
   updateAccount,
 } from '../controllers/account.controller.js';
@@ -23,5 +24,7 @@ router.get('/:id', getAccount);
 router.patch('/:id', updateAccount);
 
 router.delete('/:id', deleteAccount);
+
+router.get('/:id/balance', getAccountBalanceController);
 
 export default router;

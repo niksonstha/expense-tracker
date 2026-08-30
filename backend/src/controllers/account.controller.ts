@@ -3,10 +3,11 @@ import type { Request, Response } from 'express';
 import { AppError } from '../errors/app-error.js';
 
 import {
+  getUserAccountsWithBalance,
   createUserAccount,
   deleteUserAccount,
   getUserAccount,
-  getUserAccounts,
+  getUserAccountBalance,
   updateUserAccount,
 } from '../services/account.service.js';
 
@@ -45,7 +46,7 @@ export async function getAccounts(req: Request, res: Response) {
     );
   }
 
-  const accounts = await getUserAccounts(req.userId);
+  const accounts = await getUserAccountsWithBalance(req.userId);
 
   return res.status(200).json({
     accounts,
@@ -122,4 +123,29 @@ export async function deleteAccount(
   }
 
   return res.status(204).send();
+}
+
+export async function getAccountBalanceController(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  if (!req.userId) {
+    throw new AppError(
+      'Authentication required',
+      401,
+      'AUTHENTICATION_REQUIRED',
+    );
+  }
+
+  const { id } = req.params;
+
+  const balance = await getUserAccountBalance(id, req.userId);
+
+  if (!balance) {
+    throw new AppError('Account not found', 404, 'ACCOUNT_NOT_FOUND');
+  }
+
+  return res.status(200).json({
+    balance,
+  });
 }

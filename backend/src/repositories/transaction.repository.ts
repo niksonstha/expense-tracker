@@ -2,6 +2,7 @@ import { and, asc, count, desc, eq, gte, lte } from 'drizzle-orm';
 
 import { db } from '../db/index.js';
 import { transactions } from '../db/schema.js';
+import type { DbTransaction } from '../db/index.js';
 
 export async function createTransaction(data: {
   userId: string;
@@ -139,4 +140,22 @@ export async function deleteTransactionById(
     .returning();
 
   return result[0] ?? null;
+}
+
+export async function createTransferTransaction(
+  tx: DbTransaction,
+  data: {
+    userId: string;
+    accountId: string;
+    transferId: string;
+    type: 'TRANSFER';
+    direction: 'IN' | 'OUT';
+    amount: string;
+    description?: string;
+    transactionDate: Date;
+  },
+) {
+  const result = await tx.insert(transactions).values(data).returning();
+
+  return result[0];
 }

@@ -1,4 +1,6 @@
 import {
+  findAccountsWithBalance,
+  getAccountBalance,
   createAccount,
   deleteAccountById,
   findAccountById,
@@ -54,4 +56,12 @@ export async function updateUserAccount(
 
 export async function deleteUserAccount(accountId: string, userId: string) {
   return deleteAccountById(accountId, userId);
+}
+
+export async function getUserAccountBalance(accountId: string, userId: string) {
+  return getAccountBalance(accountId, userId);
+}
+
+export async function getUserAccountsWithBalance(userId: string) {
+  return findAccountsWithBalance(userId);
 }
