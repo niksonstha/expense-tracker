@@ -1,887 +1,160 @@
-# Expense & Personal Finance Tracker
+# Expense Tracker
 
-A backend API for managing personal finances, built with **Node.js, TypeScript, Express, PostgreSQL, and Drizzle ORM**.
+A full-stack personal finance application for managing accounts, transactions, transfers, balances, and financial summaries.
 
-This project is being developed as an intermediate-level backend project to strengthen practical backend development skills, including authentication, authorization, database design, validation, REST APIs, ownership checks, filtering, pagination, and business logic.
+The project is built with a TypeScript/Node.js backend and is being developed with a React frontend.
 
-## 🚧 Project Status
+## Features
 
-The project is currently under active development.
+### Authentication
 
-### Completed
+- User registration
+- User login
+- JWT-based authentication
+- Protected API routes
+- Password hashing with bcrypt
 
-- Project setup
-- Environment configuration
-- Express server
-- PostgreSQL connection
-- Drizzle ORM setup
-- Database schema
-- JWT authentication
-- Authentication middleware
-- User identification through JWT
-- User account CRUD
-- Category management
-- Transaction creation
-- Transaction listing
-- Transaction filtering
-- Transaction pagination
-- Transaction sorting
-- Transaction date filtering
-- Transaction retrieval by ID
-- Transaction updates
-- Transaction deletion
-- User ownership / authorization checks
-- Zod request validation
-- Centralized application errors
+### Accounts
 
-### Coming Next
-
-- Account-to-account transfers
-- Database transactions with `db.transaction()`
-- Better transaction handling
-- Financial summaries
+- Create accounts
+- View account details
+- Update accounts
+- Delete accounts
+- Account ownership protection
 - Account balance calculations
-- Dashboard APIs
-- Monthly reports
-- Spending analysis
-- React frontend
-- Testing
-- Production improvements
+- Supported account types:
+  - Bank
+  - Savings
+  - Cash
+  - Credit Card
 
----
+### Transactions
 
-# Tech Stack
+- Create income transactions
+- Create expense transactions
+- Update transactions
+- Delete transactions
+- View individual transactions
+- List transactions with pagination
+- Filter by account
+- Filter by category
+- Filter by transaction type
+- Filter by date range
+- Sort by transaction date
+- Transaction ownership protection
 
-## Backend
+### Transfers
+
+- Transfer money between accounts
+- Creates outgoing and incoming transaction records
+- Uses database transactions to keep transfer operations atomic
+- Transfer ownership protection
+
+### Categories
+
+- Income categories
+- Expense categories
+- User-specific categories
+- Category type validation
+
+### Financial Summaries
+
+- Total balance
+- Total income
+- Total expenses
+- Monthly income
+- Monthly expenses
+- Monthly net balance
+- Spending by category
+- Spending percentages
+
+### Dashboard
+
+- Financial summary
+- Account balances
+- Recent transactions
+- Current-month spending breakdown
+
+### API Security & Reliability
+
+- Helmet
+- CORS
+- Rate limiting
+- Request body size limits
+- Environment variable validation
+- Graceful server shutdown
+- PostgreSQL connection pooling
+- Centralized error handling
+- Request IDs
+- Input validation with Zod
+
+### Testing
+
+- Authentication tests
+- Account ownership tests
+- Transaction ownership tests
+- Transfer tests
+
+## Tech Stack
+
+### Backend
 
 - Node.js
 - TypeScript
-- Express 5
+- Express
 - PostgreSQL
 - Drizzle ORM
 - Zod
 - JWT
-- dotenv
+- bcrypt
+- Helmet
+- CORS
+- Vitest
+- Supertest
 
-## Development Tools
+### Frontend
 
-- tsx
+- React
 - TypeScript
-- Prettier
-- ESLint
+- Vite
 
----
+> The React frontend is currently under development.
 
-# Project Goals
-
-The main purpose of this project is learning rather than simply building a CRUD application.
-
-The project focuses on understanding how a real backend is structured.
-
-Some of the concepts being practiced are:
-
-- REST API design
-- Authentication
-- Authorization
-- JWT
-- Middleware
-- Request validation
-- Service/repository architecture
-- PostgreSQL relationships
-- Foreign keys
-- Database constraints
-- Drizzle ORM
-- Query building
-- Filtering
-- Pagination
-- Sorting
-- Error handling
-- Data ownership
-- Business rules
-- Database transactions
-
----
-
-# Project Structure
-
-The backend currently follows a layered structure:
+## Project Structure
 
 ```text
-backend/
+expense-tracker/
 │
-├── src/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── db/
+│   │   ├── errors/
+│   │   ├── middleware/
+│   │   ├── repositories/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   ├── validators/
+│   │   ├── app.ts
+│   │   └── server.ts
 │   │
-│   ├── config/
-│   │   └── env.ts
-│   │
-│   ├── controllers/
-│   │   ├── account.controller.ts
-│   │   ├── transaction.controller.ts
-│   │   └── user.controller.ts
-│   │
-│   ├── db/
-│   │   ├── index.ts
-│   │   └── schema.ts
-│   │
-│   ├── errors/
-│   │   └── app-error.ts
-│   │
-│   ├── middleware/
-│   │   └── auth.ts
-│   │
-│   ├── repositories/
-│   │   ├── account.repository.ts
-│   │   ├── category.repository.ts
-│   │   └── transaction.repository.ts
-│   │
-│   ├── routes/
-│   │   ├── account.routes.ts
-│   │   ├── category.routes.ts
-│   │   ├── transaction.routes.ts
-│   │   └── user.routes.ts
-│   │
-│   ├── services/
-│   │   ├── account.service.ts
-│   │   ├── category.service.ts
-│   │   └── transaction.service.ts
-│   │
-│   ├── validators/
-│   │   ├── account.validator.ts
-│   │   ├── transaction-query.validator.ts
-│   │   └── transaction.validator.ts
-│   │
-│   ├── app.ts
-│   └── server.ts
+│   ├── tests/
+│   ├── package.json
+│   └── tsconfig.json
 │
-├── .env
-├── .gitignore
-├── drizzle.config.ts
-├── eslint.config.mjs
-├── package.json
-├── prettier.config.*
-├── tsconfig.json
-└── README.md
+└── frontend/
+    └── ...
 ```
 
-The exact files may evolve as the project grows.
-
----
-
-# Database Design
-
-The current database contains the following main entities:
-
-```text
-users
-  │
-  ├── accounts
-  │
-  ├── categories
-  │
-  └── transactions
-          │
-          ├── accounts
-          ├── categories
-          └── transfers
-```
-
-## Users
-
-Stores application users.
-
-Important fields:
-
-```text
-id
-name
-email
-passwordHash
-createdAt
-updatedAt
-```
-
-Passwords are stored as hashes rather than plain text.
-
----
-
-## Accounts
-
-Represents financial accounts owned by a user.
-
-Examples:
-
-```text
-Main Bank
-Savings Account
-Cash
-Credit Card
-```
-
-Account types currently supported:
-
-```text
-BANK
-SAVINGS
-CASH
-CREDIT_CARD
-```
-
-Each account belongs to a user.
-
-```text
-users.id
-    ↓
-accounts.user_id
-```
-
----
-
-## Categories
-
-Categories are used to classify transactions.
-
-Supported category types:
-
-```text
-INCOME
-EXPENSE
-```
-
-Examples:
-
-```text
-INCOME
-├── Salary
-├── Freelance
-└── Bonus
-
-EXPENSE
-├── Food
-├── Transport
-├── Shopping
-└── Entertainment
-```
-
-Categories can belong to a specific user or be shared/system categories depending on the implementation.
-
----
-
-# Transactions
-
-Transactions represent money movement.
-
-Currently supported transaction types:
-
-```text
-INCOME
-EXPENSE
-TRANSFER
-```
-
-For normal income and expenses:
-
-```text
-INCOME
-  ↓
-direction = IN
-
-EXPENSE
-  ↓
-direction = OUT
-```
-
-The client does not control the direction.
-
-The backend derives it from the transaction type.
-
-For example:
-
-```json
-{
-  "type": "EXPENSE"
-}
-```
-
-becomes:
-
-```text
-type = EXPENSE
-direction = OUT
-```
-
-This prevents clients from sending contradictory values such as:
-
-```text
-type = EXPENSE
-direction = IN
-```
-
-The database also contains constraints to protect this rule.
-
----
-
-# Authentication
-
-Authentication uses JWT access tokens.
-
-The general flow is:
-
-```text
-Login
-  ↓
-Server validates credentials
-  ↓
-JWT generated
-  ↓
-Client stores token
-  ↓
-Client sends:
-Authorization: Bearer <token>
-  ↓
-Authentication middleware
-  ↓
-JWT verified
-  ↓
-userId extracted from token
-  ↓
-req.userId
-```
-
-The server determines the current user from the JWT.
-
-The client does not send the user ID when performing user-owned operations.
-
-For example, the client should not do:
-
-```json
-{
-  "userId": "..."
-}
-```
-
-Instead, the server gets the user ID from:
-
-```text
-JWT → req.userId
-```
-
----
-
-# Authorization / Ownership
-
-One of the main goals of this project is learning the difference between authentication and authorization.
-
-Authentication answers:
-
-> Who are you?
-
-Authorization answers:
-
-> Are you allowed to access this resource?
-
-For example, when retrieving an account:
-
-```text
-GET /accounts/:id
-```
-
-the database query checks both:
-
-```text
-account.id = requested ID
-AND
-account.userId = authenticated user
-```
-
-The same principle is applied to transactions.
-
-A user cannot retrieve, update, or delete another user's transaction simply by knowing its ID.
-
-Conceptually:
-
-```text
-JWT
- ↓
-authenticated user ID
- ↓
-database query
- ↓
-resource ID + user ID
- ↓
-resource belongs to user?
- ├── YES → continue
- └── NO  → 404
-```
-
----
-
-# API
-
-The API is versioned under:
-
-```text
-/api/v1
-```
-
-## User
-
-### Get Current User
-
-```http
-GET /api/v1/me
-```
-
-Requires authentication.
-
-Example:
-
-```http
-Authorization: Bearer <access_token>
-```
-
----
-
-# Accounts
-
-## Create Account
-
-```http
-POST /api/v1/accounts
-```
-
-Example:
-
-```json
-{
-  "name": "Primary Bank",
-  "type": "BANK",
-  "initialBalance": 1000
-}
-```
-
----
-
-## Get Accounts
-
-```http
-GET /api/v1/accounts
-```
-
-Returns accounts belonging to the authenticated user.
-
----
-
-## Get Account
-
-```http
-GET /api/v1/accounts/:id
-```
-
-Only the owner can access the account.
-
----
-
-## Update Account
-
-```http
-PATCH /api/v1/accounts/:id
-```
-
-Supports partial updates.
-
-Example:
-
-```json
-{
-  "name": "Main Bank"
-}
-```
-
-An empty object is rejected by validation.
-
----
-
-# Categories
-
-Categories are used to classify income and expenses.
-
-Examples:
-
-```text
-Salary → INCOME
-
-Food → EXPENSE
-
-Transport → EXPENSE
-```
-
-Category ownership is checked before using a category in a transaction.
-
-A transaction also cannot use an `EXPENSE` category with an `INCOME` transaction.
-
-For example:
-
-```text
-Transaction:
-type = INCOME
-
-Category:
-type = EXPENSE
-```
-
-is rejected by the backend.
-
----
-
-# Transactions
-
-## Create Transaction
-
-```http
-POST /api/v1/transactions
-```
-
-Example expense:
-
-```json
-{
-  "accountId": "ACCOUNT_ID",
-  "categoryId": "CATEGORY_ID",
-  "type": "EXPENSE",
-  "amount": 25.5,
-  "description": "Lunch",
-  "transactionDate": "2026-08-30"
-}
-```
-
-The backend determines:
-
-```text
-type = EXPENSE
-direction = OUT
-```
-
-Example income:
-
-```json
-{
-  "accountId": "ACCOUNT_ID",
-  "categoryId": "CATEGORY_ID",
-  "type": "INCOME",
-  "amount": 3000,
-  "description": "Monthly salary",
-  "transactionDate": "2026-08-30"
-}
-```
-
-The backend determines:
-
-```text
-type = INCOME
-direction = IN
-```
-
----
-
-## Get Transactions
-
-```http
-GET /api/v1/transactions
-```
-
-Returns transactions belonging to the authenticated user.
-
----
-
-## Transaction Filters
-
-Transactions can currently be filtered using query parameters.
-
-### Account
-
-```http
-GET /api/v1/transactions?accountId=ACCOUNT_ID
-```
-
-### Category
-
-```http
-GET /api/v1/transactions?categoryId=CATEGORY_ID
-```
-
-### Type
-
-```http
-GET /api/v1/transactions?type=EXPENSE
-```
-
-or:
-
-```http
-GET /api/v1/transactions?type=INCOME
-```
-
-### Date Range
-
-```http
-GET /api/v1/transactions?from=2026-08-01&to=2026-08-30
-```
-
-### Combined Filters
-
-```http
-GET /api/v1/transactions?type=EXPENSE&accountId=ACCOUNT_ID
-```
-
-Filters can be combined.
-
----
-
-# Pagination
-
-The transaction endpoint supports pagination.
-
-Example:
-
-```http
-GET /api/v1/transactions?page=1&limit=20
-```
-
-Default values:
-
-```text
-page  = 1
-limit = 20
-```
-
-Maximum limit:
-
-```text
-100
-```
-
-Pagination response contains information such as:
-
-```json
-{
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 47,
-    "totalPages": 3,
-    "hasNextPage": true,
-    "hasPreviousPage": false
-  }
-}
-```
-
----
-
-# Sorting
-
-Transactions can be sorted by transaction date.
-
-Newest first:
-
-```http
-GET /api/v1/transactions?sort=desc
-```
-
-Oldest first:
-
-```http
-GET /api/v1/transactions?sort=asc
-```
-
-The default is:
-
-```text
-desc
-```
-
----
-
-# Get Transaction
-
-```http
-GET /api/v1/transactions/:id
-```
-
-Only the transaction owner can retrieve the transaction.
-
-If the transaction does not belong to the authenticated user:
-
-```text
-404 TRANSACTION_NOT_FOUND
-```
-
-is returned.
-
----
-
-# Update Transaction
-
-```http
-PATCH /api/v1/transactions/:id
-```
-
-Supports partial updates.
-
-Example:
-
-```json
-{
-  "description": "Updated description"
-}
-```
-
-Another example:
-
-```json
-{
-  "amount": 50
-}
-```
-
-Multiple fields can also be changed:
-
-```json
-{
-  "amount": 50,
-  "description": "Dinner"
-}
-```
-
-An empty object:
-
-```json
-{}
-```
-
-is rejected.
-
-The backend also validates account and category ownership when they are changed.
-
----
-
-# Delete Transaction
-
-```http
-DELETE /api/v1/transactions/:id
-```
-
-Only the transaction owner can delete it.
-
-Example response:
-
-```json
-{
-  "message": "Transaction deleted successfully"
-}
-```
-
----
-
-# Validation
-
-Request validation is handled using Zod.
-
-Validation is performed before business logic.
-
-The general flow is:
-
-```text
-HTTP Request
-     ↓
-Controller
-     ↓
-Zod validation
-     ↓
-Service
-     ↓
-Repository
-     ↓
-PostgreSQL
-```
-
-Examples of validation currently include:
-
-```text
-UUID validation
-Amount must be positive
-Amount must be finite
-String length limits
-Enum validation
-Date validation
-Pagination validation
-Empty PATCH body rejection
-```
-
----
-
-# Error Handling
-
-The project uses a custom `AppError` for application-level errors.
-
-Example:
-
-```ts
-throw new AppError("Transaction not found", 404, "TRANSACTION_NOT_FOUND");
-```
-
-Errors have:
-
-```text
-message
-status code
-error code
-```
-
-Example:
-
-```json
-{
-  "error": {
-    "message": "Transaction not found",
-    "code": "TRANSACTION_NOT_FOUND"
-  }
-}
-```
-
----
-
-# Environment Variables
-
-Create a `.env` file:
-
-```env
-PORT=3000
-NODE_ENV=development
-
-DATABASE_URL=postgresql://postgres:password@localhost:5432/expense_tracker
-
-JWT_SECRET=your-super-secret-key
-JWT_EXPIRES_IN=15m
-```
-
-Never commit `.env` to Git.
-
-Make sure `.env` is included in `.gitignore`.
-
----
-
-# Installation
+## Backend Setup
 
 Clone the repository:
 
 ```bash
 git clone <your-repository-url>
-```
-
-Move into the backend directory:
-
-```bash
-cd backend
+cd expense-tracker/backend
 ```
 
 Install dependencies:
@@ -890,34 +163,36 @@ Install dependencies:
 npm install
 ```
 
-Create your `.env` file and configure PostgreSQL.
+Create a `.env` file:
 
-Then run the development server:
-
-```bash
-npm run dev
+```env
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET=your_jwt_secret
+FRONTEND_URL=http://localhost:5173
 ```
 
----
+Make sure PostgreSQL is running and the database exists.
 
-# Available Scripts
+Run database migrations:
+
+```bash
+npm run db:migrate
+```
+
+If you have seed data configured:
+
+```bash
+npm run db:seed
+```
+
+## Running the Backend
 
 Development:
 
 ```bash
 npm run dev
-```
-
-Build:
-
-```bash
-npm run build
-```
-
-Start production build:
-
-```bash
-npm start
 ```
 
 Type checking:
@@ -926,241 +201,228 @@ Type checking:
 npm run typecheck
 ```
 
-Lint:
+Build:
 
 ```bash
-npm run lint
+npm run build
 ```
 
-Format:
+Production:
 
 ```bash
-npm run format
+npm start
 ```
 
-Check formatting:
+The API will be available at:
+
+```text
+http://localhost:3000
+```
+
+Health check:
+
+```text
+GET /health
+```
+
+## API
+
+The API is versioned under:
+
+```text
+/api/v1
+```
+
+Authentication:
+
+```text
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+```
+
+Accounts:
+
+```text
+POST   /api/v1/account
+GET    /api/v1/account/:id
+GET    /api/v1/account
+PATCH  /api/v1/account/:id
+DELETE /api/v1/account/:id
+```
+
+Transactions:
+
+```text
+POST   /api/v1/transactions
+GET    /api/v1/transactions
+GET    /api/v1/transactions/:id
+PATCH  /api/v1/transactions/:id
+DELETE /api/v1/transactions/:id
+```
+
+Transfers:
+
+```text
+POST /api/v1/transfers
+GET  /api/v1/transfers/:id
+```
+
+Financial summaries and dashboard endpoints are also available under the versioned API.
+
+Authenticated endpoints require:
+
+```http
+Authorization: Bearer <access-token>
+```
+
+## Database
+
+The application uses PostgreSQL with Drizzle ORM.
+
+Useful database commands:
 
 ```bash
-npm run format:check
+npm run db:generate
+npm run db:migrate
+npm run db:studio
+npm run db:seed
 ```
 
----
-
-# Development Architecture
-
-The backend follows a layered architecture:
+The database contains relationships between:
 
 ```text
-Route
-  ↓
-Controller
-  ↓
-Service
-  ↓
-Repository
-  ↓
-Database
+Users
+  │
+  ├── Accounts
+  │
+  ├── Categories
+  │
+  ├── Transfers
+  │
+  └── Transactions
+        │
+        ├── Account
+        ├── Category
+        └── Transfer
 ```
 
-### Routes
-
-Responsible for mapping HTTP endpoints to controllers.
-
-### Controllers
-
-Responsible for:
-
-- Reading HTTP input
-- Validating request data
-- Calling services
-- Returning HTTP responses
-
-### Services
-
-Responsible for:
-
-- Business logic
-- Ownership checks
-- Business rules
-- Coordinating repositories
-
-### Repositories
-
-Responsible for:
-
-- Database queries
-- Inserts
-- Updates
-- Deletes
-- Selecting data
-
-This separation keeps database logic out of controllers and business logic out of routes.
-
----
-
-# Important Backend Concepts Practiced
-
-This project is intentionally being built step by step.
-
-So far, the project has covered:
-
-### Authentication
+Transfers are represented by a transfer record and two transaction records:
 
 ```text
-JWT
-Middleware
-Access token
-Authenticated request
+Transfer
+   │
+   ├── OUT transaction → source account
+   │
+   └── IN transaction  → destination account
 ```
 
-### Authorization
+The transfer operation is performed inside a PostgreSQL database transaction to prevent partial transfers.
 
-```text
-Resource ownership
-User-scoped queries
-Preventing cross-user access
+## Testing
+
+Run the test suite:
+
+```bash
+npm test
 ```
 
-### Database
+Run tests in watch mode:
 
-```text
-PostgreSQL
-Foreign keys
-Enums
-Indexes
-Unique constraints
-Check constraints
-Cascade deletes
+```bash
+npm run test:watch
 ```
 
-### TypeScript
+The tests cover important security and business rules such as:
 
-```text
-Typed Express requests
-Route parameters
-Request body types
-Optional properties
-Union types
+- Authentication
+- Account ownership
+- Transaction ownership
+- Transfer creation
+- Cross-user resource access prevention
+
+## Environment Variables
+
+The backend validates required environment variables when the application starts.
+
+Required variables:
+
+```env
+NODE_ENV
+PORT
+DATABASE_URL
+JWT_SECRET
+FRONTEND_URL
 ```
 
-### Validation
+Do not commit your `.env` file.
 
-```text
-Zod
-Request validation
-Query parameter validation
-Partial update validation
-```
+Make sure `.env` is included in `.gitignore`.
 
-### SQL / Drizzle
+## Security
 
-```text
-SELECT
-INSERT
-UPDATE
-DELETE
-WHERE
-AND
-OR
-LIMIT
-OFFSET
-ORDER BY
-COUNT
-Date filtering
-```
+The application includes several security measures:
 
----
+- Passwords are never stored as plain text.
+- JWT authentication protects private routes.
+- Resources are scoped to the authenticated user.
+- Zod validates incoming data.
+- Rate limiting protects API endpoints.
+- Helmet adds HTTP security headers.
+- CORS restricts frontend access.
+- Request body size is limited.
+- Database operations use parameterized queries through Drizzle ORM.
+- Database transactions are used for multi-step transfer operations.
 
-# Learning Roadmap
+## Development Roadmap
 
-The project is being developed in phases.
+### Backend
 
-```text
-Phase 0
-Project setup
-        ↓
-Phase 1
-Backend foundation
-        ↓
-Phase 2
-Authentication
-        ↓
-Phase 3
-Users + Accounts
-        ↓
-Phase 4
-Categories
-        ↓
-Phase 5
-Transactions
-        ↓
-Phase 6
-Transfers
-        ↓
-Phase 7
-Financial calculations
-        ↓
-Phase 8
-Reports & dashboard
-        ↓
-Phase 9
-React frontend
-        ↓
-Phase 10
-Testing
-        ↓
-Phase 11
-Production improvements
-```
+- [x] Authentication
+- [x] Accounts
+- [x] Transactions
+- [x] Categories
+- [x] Account balances
+- [x] Account-to-account transfers
+- [x] Database transactions
+- [x] Financial summaries
+- [x] Dashboard APIs
+- [x] Monthly financial summaries
+- [x] Spending analysis
+- [x] Automated tests
+- [x] Production hardening
 
-The current implementation is around the **Transactions phase**.
+### Frontend
 
----
+- [ ] React application
+- [ ] Authentication UI
+- [ ] Login/Register
+- [ ] Dashboard
+- [ ] Account management
+- [ ] Transaction management
+- [ ] Transfer management
+- [ ] Categories
+- [ ] Financial summaries
+- [ ] Spending charts
+- [ ] Loading and error states
+- [ ] Responsive design
 
-# Future Features
+## Future Improvements
 
-The project will eventually support:
+Possible future improvements include:
 
-- Account-to-account transfers
-- Transaction history
-- Current account balances
-- Income summaries
-- Expense summaries
-- Monthly financial reports
-- Category-based spending analysis
-- Dashboard statistics
-- Date-based reports
-- React frontend
-- Authentication UI
-- Responsive dashboard
-- Automated tests
-- API documentation
-- Production deployment
+- Refresh tokens
+- Email verification
+- Password reset
+- Advanced reporting
+- CSV import/export
+- CSV/PDF financial reports
+- Recurring transactions
+- Budget management
+- Notifications
+- More detailed analytics
+- Deployment with CI/CD
+- Automated database backups
 
----
+## License
 
-# Learning Philosophy
-
-This project is intentionally not designed as an overly advanced system.
-
-The goal is to move from:
-
-```text
-Basic CRUD
-```
-
-to:
-
-```text
-Real backend business logic
-```
-
-while learning concepts progressively.
-
-The implementation prioritizes understanding over blindly adding libraries or complex architecture.
-
----
-
-# License
-
-This project is currently for learning and educational purposes.
+This project is currently for learning and personal development purposes.
