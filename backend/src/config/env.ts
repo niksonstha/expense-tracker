@@ -5,6 +5,8 @@ export const env = {
 
   nodeEnv: process.env.NODE_ENV || 'development',
 
+  frontendURL: process.env.FRONTEND_URL,
+
   databaseUrl: process.env.DATABASE_URL || '',
 
   jwtSecret: process.env.JWT_SECRET || '',
