@@ -60,40 +60,44 @@ export const users = pgTable('users', {
     .notNull(),
 });
 
-export const accounts = pgTable('accounts', {
-  id: uuid('id').defaultRandom().primaryKey(),
+export const accounts = pgTable(
+  'accounts',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
 
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, {
-      onDelete: 'cascade',
-    }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
 
-  name: varchar('name', {
-    length: 100,
-  }).notNull(),
+    name: varchar('name', {
+      length: 100,
+    }).notNull(),
 
-  type: accountTypeEnum('type').notNull(),
+    type: accountTypeEnum('type').notNull(),
 
-  initialBalance: numeric('initial_balance', {
-    precision: 12,
-    scale: 2,
-  })
-    .notNull()
-    .default('0'),
+    initialBalance: numeric('initial_balance', {
+      precision: 12,
+      scale: 2,
+    })
+      .notNull()
+      .default('0'),
 
-  createdAt: timestamp('created_at', {
-    withTimezone: true,
-  })
-    .defaultNow()
-    .notNull(),
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
 
-  updatedAt: timestamp('updated_at', {
-    withTimezone: true,
-  })
-    .defaultNow()
-    .notNull(),
-});
+    updatedAt: timestamp('updated_at', {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index('accounts_user_id_idx').on(table.userId)],
+);
 
 export const categories = pgTable(
   'categories',
@@ -128,34 +132,38 @@ export const categories = pgTable(
   ],
 );
 
-export const transfers = pgTable('transfers', {
-  id: uuid('id').defaultRandom().primaryKey(),
+export const transfers = pgTable(
+  'transfers',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
 
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, {
-      onDelete: 'cascade',
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
+
+    amount: numeric('amount', {
+      precision: 12,
+      scale: 2,
+    }).notNull(),
+
+    description: varchar('description', {
+      length: 500,
     }),
 
-  amount: numeric('amount', {
-    precision: 12,
-    scale: 2,
-  }).notNull(),
+    transferDate: timestamp('transfer_date', {
+      withTimezone: true,
+    }).notNull(),
 
-  description: varchar('description', {
-    length: 500,
-  }),
-
-  transferDate: timestamp('transfer_date', {
-    withTimezone: true,
-  }).notNull(),
-
-  createdAt: timestamp('created_at', {
-    withTimezone: true,
-  })
-    .defaultNow()
-    .notNull(),
-});
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index('transfers_user_id_idx').on(table.userId)],
+);
 
 export const transactions = pgTable(
   'transactions',
