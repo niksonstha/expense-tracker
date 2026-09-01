@@ -1,13 +1,10 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
+import { DashboardPage } from "../features/dashboard/DashboardPage";
 import { RegisterPage } from "../features/auth/RegisterPage";
 import { LoginPage } from "../features/auth/LoginPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppLayout } from "../layouts/AppLayout";
-
-function DashboardPlaceholder() {
-  return <div>Dashboard Page</div>;
-}
 
 export function AppRouter() {
   return (
@@ -18,7 +15,7 @@ export function AppRouter() {
 
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<DashboardPlaceholder />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
         </Route>
 
