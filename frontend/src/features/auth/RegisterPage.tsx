@@ -3,6 +3,7 @@ import type { SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { registerUser } from "./auth.api";
+import { getApiErrorMessage } from "../../lib/api-error";
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -41,26 +42,12 @@ export function RegisterPage() {
         },
       });
     } catch (error) {
-      if (typeof error === "object" && error !== null && "response" in error) {
-        const response = (
-          error as {
-            response?: {
-              data?: {
-                error?: {
-                  message?: string;
-                };
-              };
-            };
-          }
-        ).response;
-
-        setError(
-          response?.data?.error?.message ??
-            "Unable to create your account. Please try again.",
-        );
-      } else {
-        setError("Unable to create your account. Please try again.");
-      }
+      setError(
+        getApiErrorMessage(
+          error,
+          "Unable to create your account. Please try again.",
+        ),
+      );
     } finally {
       setIsSubmitting(false);
     }

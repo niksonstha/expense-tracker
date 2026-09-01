@@ -9,33 +9,44 @@ export function SpendingByCategory({
   spending,
   total,
 }: SpendingByCategoryProps) {
-  if (spending.length === 0) {
-    return (
-      <section>
-        <h2>Spending by Category</h2>
-        <p>No spending recorded this month.</p>
-      </section>
-    );
-  }
-
   return (
-    <section>
-      <h2>Spending by Category</h2>
+    <section className="dashboard-section">
+      <div className="dashboard-section__header">
+        <h2>Spending by Category</h2>
+      </div>
 
-      <p>Total: £{total}</p>
+      {spending.length === 0 ? (
+        <p className="dashboard-empty">No spending recorded this month.</p>
+      ) : (
+        <>
+          <p className="spending-total">
+            Total: <strong>£{total}</strong>
+          </p>
 
-      <ul>
-        {spending.map((item) => (
-          <li key={item.categoryId}>
-            <strong>{item.category}</strong>
+          <div className="spending-list">
+            {spending.map((item) => (
+              <div className="spending-row" key={item.categoryId}>
+                <div className="spending-row__info">
+                  <span>{item.category}</span>
 
-            <span>
-              {" "}
-              — £{item.amount} ({item.percentage}%)
-            </span>
-          </li>
-        ))}
-      </ul>
+                  <strong>{item.percentage}%</strong>
+                </div>
+
+                <div className="spending-bar">
+                  <div
+                    className="spending-bar__fill"
+                    style={{
+                      width: `${item.percentage}%`,
+                    }}
+                  />
+                </div>
+
+                <span className="spending-row__amount">£{item.amount}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }

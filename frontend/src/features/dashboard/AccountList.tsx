@@ -5,25 +5,28 @@ interface AccountListProps {
 }
 
 export function AccountList({ accounts }: AccountListProps) {
-  if (accounts.length === 0) {
-    return <p>No accounts yet.</p>;
-  }
-
   return (
-    <section>
-      <h2>Accounts</h2>
+    <section className="dashboard-section">
+      <div className="dashboard-section__header">
+        <h2>Accounts</h2>
+      </div>
 
-      <ul>
-        {accounts.map((account) => (
-          <li key={account.id}>
-            <strong>{account.name}</strong>
-            <span>
-              {" "}
-              — {account.type} — £{account.balance}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {accounts.length === 0 ? (
+        <p className="dashboard-empty">No accounts yet.</p>
+      ) : (
+        <div className="account-list">
+          {accounts.map((account) => (
+            <article className="account-card" key={account.id}>
+              <div>
+                <h3>{account.name}</h3>
+                <p>{account.type}</p>
+              </div>
+
+              <strong>£{account.balance}</strong>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

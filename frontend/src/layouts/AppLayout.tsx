@@ -7,30 +7,34 @@ export function AppLayout() {
   const navigate = useNavigate();
 
   return (
-    <div>
-      <header>
-        <h1>Expense Tracker</h1>
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="app-header__inner">
+          <Link to="/dashboard" className="app-brand">
+            Expense Tracker
+          </Link>
 
-        <nav>
-          <Link to="/dashboard">Dashboard</Link>
-        </nav>
+          <nav className="app-nav">
+            <Link to="/dashboard">Dashboard</Link>
+          </nav>
 
-        <div>
-          <span>Welcome, {user?.name}</span>
+          <div className="app-user">
+            <span>Welcome, {user?.name}</span>
 
-          <button
-            type="button"
-            onClick={() => {
-              logout();
-              navigate("/login", { replace: true });
-            }}
-          >
-            Logout
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                navigate("/login", { replace: true });
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </header>
 
-      <main>
+      <main className="app-main">
         <Outlet />
       </main>
     </div>

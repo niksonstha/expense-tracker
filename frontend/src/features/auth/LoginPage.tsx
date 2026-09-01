@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getApiErrorMessage } from "../../lib/api-error";
 
 import { useAuth } from "./auth.context";
 
@@ -42,26 +43,9 @@ export function LoginPage() {
 
       navigate(destination, { replace: true });
     } catch (error) {
-      if (typeof error === "object" && error !== null && "response" in error) {
-        const response = (
-          error as {
-            response?: {
-              data?: {
-                error?: {
-                  message?: string;
-                };
-              };
-            };
-          }
-        ).response;
-
-        setError(
-          response?.data?.error?.message ??
-            "Unable to log in. Please try again.",
-        );
-      } else {
-        setError("Unable to log in. Please try again.");
-      }
+      setError(
+        getApiErrorMessage(error, "Unable to log in. Please try again."),
+      );
     } finally {
       setIsSubmitting(false);
     }

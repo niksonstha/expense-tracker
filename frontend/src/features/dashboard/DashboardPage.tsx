@@ -5,6 +5,7 @@ import { StatCard } from "../../components/ui/StatCard";
 import { AccountList } from "./AccountList";
 import { RecentTransactions } from "./RecentTransactions";
 import { SpendingByCategory } from "./SpendingByCategory";
+import { getApiErrorMessage } from "../../lib/api-error";
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
@@ -18,14 +19,14 @@ export function DashboardPage() {
 
         setDashboard(response.dashboard);
       } catch {
-        setError("Unable to load dashboard.");
+        setError(getApiErrorMessage(error, "Unable to load dashboard."));
       } finally {
         setIsLoading(false);
       }
     }
 
     void loadDashboard();
-  }, []);
+  }, [error]);
 
   if (isLoading) {
     return <p>Loading dashboard...</p>;
@@ -40,10 +41,24 @@ export function DashboardPage() {
   }
 
   return (
-    <section>
-      <h2>Dashboard</h2>
+    <section className="dashboard">
+      <div className="dashboard__heading">
+        <div>
+          <h2>Dashboard</h2>
 
-      <div>
+          <p>
+            {new Date(
+              dashboard.period.year,
+              dashboard.period.month - 1,
+            ).toLocaleString("en-GB", {
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+        </div>
+      </div>
+
+      <div className="dashboard__stats">
         <StatCard
           title="Total Balance"
           value={`£${dashboard.summary.totalBalance}`}
@@ -60,12 +75,16 @@ export function DashboardPage() {
         />
       </div>
 
-      <AccountList accounts={dashboard.accounts} />
-      <RecentTransactions transactions={dashboard.recentTransactions} />
-      <SpendingByCategory
-        spending={dashboard.spending}
-        total={dashboard.spendingTotal}
-      />
+      <div className="dashboard__content">
+        <AccountList accounts={dashboard.accounts} />
+
+        <RecentTransactions transactions={dashboard.recentTransactions} />
+
+        <SpendingByCategory
+          spending={dashboard.spending}
+          total={dashboard.spendingTotal}
+        />
+      </div>
     </section>
   );
 }

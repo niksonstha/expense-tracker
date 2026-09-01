@@ -5,32 +5,38 @@ interface RecentTransactionsProps {
 }
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
-  if (transactions.length === 0) {
-    return (
-      <section>
-        <h2>Recent Transactions</h2>
-        <p>No transactions yet.</p>
-      </section>
-    );
-  }
-
   return (
-    <section>
-      <h2>Recent Transactions</h2>
+    <section className="dashboard-section">
+      <div className="dashboard-section__header">
+        <h2>Recent Transactions</h2>
+      </div>
 
-      <ul>
-        {transactions.map((transaction) => (
-          <li key={transaction.id}>
-            <strong>{transaction.type}</strong>
+      {transactions.length === 0 ? (
+        <p className="dashboard-empty">No transactions yet.</p>
+      ) : (
+        <div className="transaction-list">
+          {transactions.map((transaction) => (
+            <article className="transaction-row" key={transaction.id}>
+              <div>
+                <h3>{transaction.description ?? transaction.type}</h3>
 
-            <span>
-              {" "}
-              — £{transaction.amount}
-              {transaction.description ? ` — ${transaction.description}` : ""}
-            </span>
-          </li>
-        ))}
-      </ul>
+                <p>{transaction.type}</p>
+              </div>
+
+              <strong
+                className={
+                  transaction.direction === "IN"
+                    ? "transaction-amount transaction-amount--income"
+                    : "transaction-amount transaction-amount--expense"
+                }
+              >
+                {transaction.direction === "IN" ? "+" : "-"}£
+                {transaction.amount}
+              </strong>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
