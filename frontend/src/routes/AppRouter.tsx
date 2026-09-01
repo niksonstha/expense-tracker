@@ -5,6 +5,7 @@ import { RegisterPage } from "../features/auth/RegisterPage";
 import { LoginPage } from "../features/auth/LoginPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppLayout } from "../layouts/AppLayout";
+import { AccountsPage } from "../features/accounts/AccountsPage";
 
 export function AppRouter() {
   return (
@@ -16,6 +17,7 @@ export function AppRouter() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/accounts" element={<AccountsPage />} />
           </Route>
         </Route>
 
