@@ -474,3 +474,24 @@ ul {
 .account-card__actions button:hover {
   background: #f9fafb;
 }
+
+.button {
+  min-height: 40px;
+  padding: 8px 16px;
+
+  border: 0;
+  border-radius: 6px;
+
+  background: #111827;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.button:hover {
+  background: #374151;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

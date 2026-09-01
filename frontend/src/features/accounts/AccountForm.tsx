@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
+import { Button } from "../../components/ui/Button";
 
 import { getApiErrorMessage } from "../../lib/api-error";
 import {
@@ -130,13 +131,13 @@ export function AccountForm({ account, onSaved, onCancel }: AccountFormProps) {
         )}
 
         <div>
-          <button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting
               ? "Saving..."
               : isEditing
                 ? "Save Changes"
                 : "Add Account"}
-          </button>
+          </Button>
 
           {isEditing && onCancel && (
             <button type="button" onClick={onCancel} disabled={isSubmitting}>
