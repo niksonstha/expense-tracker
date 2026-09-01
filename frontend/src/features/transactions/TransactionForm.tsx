@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
+
 import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 
@@ -6,16 +7,26 @@ import { Button } from "../../components/ui/Button";
 import { getApiErrorMessage } from "../../lib/api-error";
 import { getAccounts, type Account } from "../accounts/accounts.api";
 import { getCategories, type Category } from "../categories/categories.api";
-import { createTransaction, type TransactionType } from "./transactions.api";
+import {
+  updateTransaction,
+  createTransaction,
+  type Transaction,
+  type TransactionType,
+} from "./transactions.api";
 
 interface TransactionFormProps {
+  transaction?: Transaction;
   onSaved: () => Promise<void>;
+  onCancel?: () => void;
 }
 
-export function TransactionForm({ onSaved }: TransactionFormProps) {
+export function TransactionForm({
+  transaction,
+  onSaved,
+  onCancel,
+}: TransactionFormProps) {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-
   const [accountId, setAccountId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [type, setType] = useState<TransactionType>("EXPENSE");
@@ -24,7 +35,6 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
   const [transactionDate, setTransactionDate] = useState(
     new Date().toISOString().split("T")[0],
   );
-
   const [isLoadingOptions, setIsLoadingOptions] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,13 +46,14 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
           getAccounts(),
           getCategories(),
         ]);
+
         console.log("Transaction accounts:", accountsResponse);
         console.log("Transaction categories:", categoriesResponse);
 
         setAccounts(accountsResponse.accounts);
         setCategories(categoriesResponse.categories);
 
-        if (accountsResponse.accounts.length > 0) {
+        if (accountsResponse.accounts.length > 0 && !transaction) {
           setAccountId(accountsResponse.accounts[0].id);
         }
       } catch (error) {
@@ -55,7 +66,20 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
     }
 
     void loadFormOptions();
-  }, []);
+  }, [transaction]);
+
+  useEffect(() => {
+    if (!transaction) {
+      return;
+    }
+
+    setAccountId(transaction.accountId);
+    setCategoryId(transaction.categoryId ?? "");
+    setType(transaction.type);
+    setAmount(transaction.amount);
+    setDescription(transaction.description ?? "");
+    setTransactionDate(transaction.transactionDate.slice(0, 10));
+  }, [transaction]);
 
   const filteredCategories = categories.filter(
     (category) => category.type === type,
@@ -72,31 +96,40 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-
     setError(null);
     setIsSubmitting(true);
 
     try {
-      await createTransaction({
-        accountId,
-        ...(categoryId ? { categoryId } : {}),
-        type,
-        amount: Number(amount),
-        ...(description.trim() ? { description: description.trim() } : {}),
-        transactionDate,
-      });
-
-      setAmount("");
-      setDescription("");
-      setCategoryId("");
-      setTransactionDate(new Date().toISOString().split("T")[0]);
+      if (transaction) {
+        await updateTransaction(transaction.id, {
+          accountId,
+          ...(categoryId ? { categoryId } : { categoryId: null }),
+          type: type as "INCOME" | "EXPENSE",
+          amount: Number(amount),
+          ...(description.trim()
+            ? { description: description.trim() }
+            : { description: null }),
+          transactionDate,
+        });
+      } else {
+        await createTransaction({
+          accountId,
+          ...(categoryId ? { categoryId } : {}),
+          type: type as "INCOME" | "EXPENSE",
+          amount: Number(amount),
+          ...(description.trim() ? { description: description.trim() } : {}),
+          transactionDate,
+        });
+      }
 
       await onSaved();
     } catch (error) {
       setError(
         getApiErrorMessage(
           error,
-          "Unable to create transaction. Please try again.",
+          transaction
+            ? "Unable to update transaction. Please try again."
+            : "Unable to create transaction. Please try again.",
         ),
       );
     } finally {
@@ -124,7 +157,7 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
 
   return (
     <section className="form-section">
-      <h2>Add Transaction</h2>
+      <h2>{transaction ? "Edit Transaction" : "Add Transaction"}</h2>
 
       <form className="form" onSubmit={handleSubmit}>
         <div className="form-field">
@@ -220,8 +253,18 @@ export function TransactionForm({ onSaved }: TransactionFormProps) {
         )}
 
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Add Transaction"}
+          {isSubmitting
+            ? "Saving..."
+            : transaction
+              ? "Update Transaction"
+              : "Add Transaction"}
         </Button>
+
+        {onCancel && (
+          <button type="button" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
       </form>
     </section>
   );

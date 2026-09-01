@@ -1,6 +1,6 @@
 import { api } from "../../services/api";
 
-export type TransactionType = "INCOME" | "EXPENSE";
+export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER";
 
 export type TransactionDirection = "IN" | "OUT";
 
