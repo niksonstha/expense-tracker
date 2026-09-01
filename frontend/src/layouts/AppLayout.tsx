@@ -17,6 +17,7 @@ export function AppLayout() {
           <nav className="app-nav">
             <Link to="/dashboard">Dashboard</Link>
             <Link to="/accounts">Accounts</Link>
+            <Link to="/transactions">Transactions</Link>
           </nav>
 
           <div className="app-user">

@@ -6,6 +6,7 @@ import { LoginPage } from "../features/auth/LoginPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppLayout } from "../layouts/AppLayout";
 import { AccountsPage } from "../features/accounts/AccountsPage";
+import { TransactionsPage } from "../features/transactions/TransactionsPage";
 
 export function AppRouter() {
   return (
@@ -18,6 +19,7 @@ export function AppRouter() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/accounts" element={<AccountsPage />} />
+            <Route path="/transactions" element={<TransactionsPage />} />
           </Route>
         </Route>
 
