@@ -1,8 +1,8 @@
 # Expense Tracker
 
-A full-stack personal finance application for managing accounts, transactions, transfers, balances, and financial summaries.
+A full-stack personal finance application for managing accounts, transactions, transfers, categories, balances, and financial summaries.
 
-The project is built with a TypeScript/Node.js backend and is being developed with a React frontend.
+The project combines a production-oriented TypeScript/Node.js REST API with a modern React frontend designed around a clean personal-finance dashboard experience.
 
 ## Features
 
@@ -13,6 +13,8 @@ The project is built with a TypeScript/Node.js backend and is being developed wi
 - JWT-based authentication
 - Protected API routes
 - Password hashing with bcrypt
+- Authenticated user restoration
+- Protected frontend routes
 
 ### Accounts
 
@@ -35,27 +37,35 @@ The project is built with a TypeScript/Node.js backend and is being developed wi
 - Update transactions
 - Delete transactions
 - View individual transactions
-- List transactions with pagination
+- Paginated transaction listing
+- Search transactions
 - Filter by account
 - Filter by category
 - Filter by transaction type
 - Filter by date range
 - Sort by transaction date
 - Transaction ownership protection
+- Transaction loading and empty states
 
 ### Transfers
 
 - Transfer money between accounts
 - Creates outgoing and incoming transaction records
-- Uses database transactions to keep transfer operations atomic
+- Atomic transfer operations using database transactions
 - Transfer ownership protection
+- Transfer validation
+- Transfer success and error feedback
 
 ### Categories
 
 - Income categories
 - Expense categories
 - User-specific categories
+- Create categories
+- Edit categories
+- Delete categories
 - Category type validation
+- Category ownership protection
 
 ### Financial Summaries
 
@@ -70,10 +80,35 @@ The project is built with a TypeScript/Node.js backend and is being developed wi
 
 ### Dashboard
 
-- Financial summary
+- Financial summary cards
 - Account balances
 - Recent transactions
 - Current-month spending breakdown
+- Spending-by-category visualization
+- Quick expense creation
+- Loading skeletons
+- Empty states
+- Error handling
+- Success notifications
+
+### Frontend UI
+
+- Modern responsive dashboard
+- React + TypeScript
+- Tailwind CSS
+- Lucide icons
+- Responsive sidebar navigation
+- Mobile navigation drawer
+- Light and dark themes
+- Theme persistence
+- Responsive transaction views
+- Reusable UI components
+- Loading states and skeletons
+- Toast notifications
+- Confirmation dialogs
+- Form validation
+- Submit loading states
+- Responsive layouts for desktop, tablet, and mobile
 
 ### API Security & Reliability
 
@@ -87,6 +122,7 @@ The project is built with a TypeScript/Node.js backend and is being developed wi
 - Centralized error handling
 - Request IDs
 - Input validation with Zod
+- Parameterized database queries through Drizzle ORM
 
 ### Testing
 
@@ -94,6 +130,8 @@ The project is built with a TypeScript/Node.js backend and is being developed wi
 - Account ownership tests
 - Transaction ownership tests
 - Transfer tests
+- Cross-user resource access prevention
+- API/business-rule validation
 
 ## Tech Stack
 
@@ -101,7 +139,7 @@ The project is built with a TypeScript/Node.js backend and is being developed wi
 
 - Node.js
 - TypeScript
-- Express
+- Express 5
 - PostgreSQL
 - Drizzle ORM
 - Zod
@@ -117,8 +155,10 @@ The project is built with a TypeScript/Node.js backend and is being developed wi
 - React
 - TypeScript
 - Vite
-
-> The React frontend is currently under development.
+- React Router
+- Axios
+- Tailwind CSS
+- Lucide React
 
 ## Project Structure
 
@@ -144,17 +184,58 @@ expense-tracker/
 │   ├── package.json
 │   └── tsconfig.json
 │
-└── frontend/
-    └── ...
+├── frontend/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   └── layout/
+│   │   ├── features/
+│   │   │   ├── auth/
+│   │   │   ├── accounts/
+│   │   │   ├── transactions/
+│   │   │   ├── categories/
+│   │   │   ├── transfers/
+│   │   │   └── dashboard/
+│   │   ├── hooks/
+│   │   ├── layouts/
+│   │   ├── lib/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── types/
+│   │   ├── index.css
+│   │   └── main.tsx
+│   │
+│   ├── package.json
+│   └── vite.config.ts
+│
+└── README.md
+```
+
+## Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js
+- npm
+- PostgreSQL
+
+### Clone the Repository
+
+```bash
+git clone <your-repository-url>
+cd expense-tracker
 ```
 
 ## Backend Setup
 
-Clone the repository:
+Navigate to the backend:
 
 ```bash
-git clone <your-repository-url>
-cd expense-tracker/backend
+cd backend
 ```
 
 Install dependencies:
@@ -168,8 +249,11 @@ Create a `.env` file:
 ```env
 NODE_ENV=development
 PORT=3000
+
 DATABASE_URL=your_postgresql_connection_string
+
 JWT_SECRET=your_jwt_secret
+
 FRONTEND_URL=http://localhost:5173
 ```
 
@@ -181,13 +265,71 @@ Run database migrations:
 npm run db:migrate
 ```
 
-If you have seed data configured:
+If seed data is configured:
 
 ```bash
 npm run db:seed
 ```
 
-## Running the Backend
+## Frontend Setup
+
+Open a new terminal and navigate to the frontend:
+
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file:
+
+```env
+VITE_API_URL=http://localhost:3000/api/v1
+```
+
+The frontend uses the backend API through the configured `VITE_API_URL`.
+
+## Running the Application
+
+### Start the Backend
+
+From `backend/`:
+
+```bash
+npm run dev
+```
+
+The API will be available at:
+
+```text
+http://localhost:3000
+```
+
+Health check:
+
+```text
+GET /health
+```
+
+### Start the Frontend
+
+From `frontend/`:
+
+```bash
+npm run dev
+```
+
+Vite will provide the local development URL, normally:
+
+```text
+http://localhost:5173
+```
+
+## Backend Commands
 
 Development:
 
@@ -213,16 +355,13 @@ Production:
 npm start
 ```
 
-The API will be available at:
+Database commands:
 
-```text
-http://localhost:3000
-```
-
-Health check:
-
-```text
-GET /health
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:studio
+npm run db:seed
 ```
 
 ## API
@@ -233,24 +372,25 @@ The API is versioned under:
 /api/v1
 ```
 
-Authentication:
+### Authentication
 
 ```text
 POST /api/v1/auth/register
 POST /api/v1/auth/login
+GET  /api/v1/me
 ```
 
-Accounts:
+### Accounts
 
 ```text
 POST   /api/v1/account
-GET    /api/v1/account/:id
 GET    /api/v1/account
+GET    /api/v1/account/:id
 PATCH  /api/v1/account/:id
 DELETE /api/v1/account/:id
 ```
 
-Transactions:
+### Transactions
 
 ```text
 POST   /api/v1/transactions
@@ -260,14 +400,26 @@ PATCH  /api/v1/transactions/:id
 DELETE /api/v1/transactions/:id
 ```
 
-Transfers:
+### Transfers
 
 ```text
 POST /api/v1/transfers
 GET  /api/v1/transfers/:id
 ```
 
-Financial summaries and dashboard endpoints are also available under the versioned API.
+### Categories
+
+```text
+POST   /api/v1/categories
+GET    /api/v1/categories
+GET    /api/v1/categories/:id
+PATCH  /api/v1/categories/:id
+DELETE /api/v1/categories/:id
+```
+
+### Dashboard
+
+The dashboard API provides financial summaries, account information, recent transactions, and spending information.
 
 Authenticated endpoints require:
 
@@ -279,31 +431,22 @@ Authorization: Bearer <access-token>
 
 The application uses PostgreSQL with Drizzle ORM.
 
-Useful database commands:
-
-```bash
-npm run db:generate
-npm run db:migrate
-npm run db:studio
-npm run db:seed
-```
-
-The database contains relationships between:
+The main database relationships are:
 
 ```text
 Users
-  │
-  ├── Accounts
-  │
-  ├── Categories
-  │
-  ├── Transfers
-  │
-  └── Transactions
-        │
-        ├── Account
-        ├── Category
-        └── Transfer
+ │
+ ├── Accounts
+ │
+ ├── Categories
+ │
+ ├── Transfers
+ │
+ └── Transactions
+       │
+       ├── Account
+       ├── Category
+       └── Transfer
 ```
 
 Transfers are represented by a transfer record and two transaction records:
@@ -316,7 +459,7 @@ Transfer
    └── IN transaction  → destination account
 ```
 
-The transfer operation is performed inside a PostgreSQL database transaction to prevent partial transfers.
+The transfer operation is performed inside a PostgreSQL database transaction to prevent partial transfers and keep account balances consistent.
 
 ## Testing
 
@@ -332,19 +475,20 @@ Run tests in watch mode:
 npm run test:watch
 ```
 
-The tests cover important security and business rules such as:
+The tests cover important security and business rules including:
 
 - Authentication
 - Account ownership
 - Transaction ownership
 - Transfer creation
 - Cross-user resource access prevention
+- Validation and error handling
 
 ## Environment Variables
 
-The backend validates required environment variables when the application starts.
+### Backend
 
-Required variables:
+The backend validates required environment variables when the application starts.
 
 ```env
 NODE_ENV
@@ -354,9 +498,15 @@ JWT_SECRET
 FRONTEND_URL
 ```
 
-Do not commit your `.env` file.
+### Frontend
 
-Make sure `.env` is included in `.gitignore`.
+```env
+VITE_API_URL
+```
+
+Do not commit `.env` files.
+
+Make sure environment files are included in `.gitignore`.
 
 ## Security
 
@@ -371,7 +521,8 @@ The application includes several security measures:
 - CORS restricts frontend access.
 - Request body size is limited.
 - Database operations use parameterized queries through Drizzle ORM.
-- Database transactions are used for multi-step transfer operations.
+- Multi-step transfer operations use PostgreSQL transactions.
+- Ownership checks prevent users from accessing another user's resources.
 
 ## Development Roadmap
 
@@ -393,36 +544,56 @@ The application includes several security measures:
 
 ### Frontend
 
-- [ ] React application
-- [ ] Authentication UI
-- [ ] Login/Register
-- [ ] Dashboard
-- [ ] Account management
-- [ ] Transaction management
-- [ ] Transfer management
-- [ ] Categories
-- [ ] Financial summaries
-- [ ] Spending charts
-- [ ] Loading and error states
-- [ ] Responsive design
+- [x] React application
+- [x] Authentication UI
+- [x] Login/Register
+- [x] Protected routes
+- [x] Dashboard
+- [x] Account management
+- [x] Transaction management
+- [x] Transfer management
+- [x] Categories
+- [x] Financial summaries
+- [x] Spending visualization
+- [x] Loading and error states
+- [x] Toast notifications
+- [x] Confirmation dialogs
+- [x] Responsive design
+- [x] Dark mode
+- [x] Mobile navigation
+- [x] UI polish and responsive improvements
+
+### Planned
+
+- [ ] Budget management
+- [ ] Advanced analytics
+- [ ] Recurring transactions
+- [ ] CSV import/export
+- [ ] CSV/PDF financial reports
+- [ ] Refresh tokens
+- [ ] Email verification
+- [ ] Password reset
+- [ ] Notifications
+- [ ] CI/CD deployment
+- [ ] Automated database backups
 
 ## Future Improvements
 
 Possible future improvements include:
 
-- Refresh tokens
+- Budget tracking and spending limits
+- More detailed analytics and reporting
+- Recurring transactions
+- CSV import/export
+- PDF financial reports
+- Refresh-token authentication
 - Email verification
 - Password reset
-- Advanced reporting
-- CSV import/export
-- CSV/PDF financial reports
-- Recurring transactions
-- Budget management
 - Notifications
-- More detailed analytics
-- Deployment with CI/CD
+- CI/CD deployment
 - Automated database backups
+- Production deployment and monitoring
 
 ## License
 
-This project is currently for learning and personal development purposes.
+This project is currently developed for learning and personal development purposes.
