@@ -12,6 +12,7 @@ import { getApiErrorMessage } from "../lib/api-error";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { CategoryList } from "../features/categories/CategoryList";
+import { LoadingMessage } from "../components/ui/LoadingMessage";
 
 export function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -91,7 +92,7 @@ export function CategoriesPage() {
   }
 
   if (isLoading) {
-    return <p>Loading categories...</p>;
+    return <LoadingMessage message="Loading categories..." />;
   }
 
   return (

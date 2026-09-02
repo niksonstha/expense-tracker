@@ -16,6 +16,7 @@ import { getApiErrorMessage } from "../lib/api-error";
 import { TransactionForm } from "../features/transactions/TransactionForm";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { LoadingMessage } from "../components/ui/LoadingMessage";
 
 export function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -181,7 +182,7 @@ export function TransactionsPage() {
         </div>
 
         {isLoading ? (
-          <p>Loading transactions...</p>
+          <LoadingMessage message="Loading transactions..." />
         ) : transactions.length === 0 ? (
           <p className="dashboard-empty">No transactions yet.</p>
         ) : (

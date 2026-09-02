@@ -11,7 +11,6 @@ export function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -21,10 +20,12 @@ export function RegisterPage() {
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-
     setError(null);
 
-    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
+    if (!trimmedName || !trimmedEmail || !password || !confirmPassword) {
       setError("All fields are required.");
       return;
     }
@@ -38,8 +39,8 @@ export function RegisterPage() {
 
     try {
       await registerUser({
-        name: name.trim(),
-        email: email.trim(),
+        name: trimmedName,
+        email: trimmedEmail,
         password,
       });
 
@@ -62,74 +63,86 @@ export function RegisterPage() {
   }
 
   return (
-    <main>
-      <h1>Expense Tracker</h1>
+    <main className="auth-page">
+      <section className="auth-card">
+        <div className="auth-header">
+          <div className="auth-logo">ET</div>
 
-      <h2>Create Account</h2>
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name</label>
-
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            required
-            autoComplete="name"
-          />
+          <div>
+            <h1>Create your account</h1>
+            <p>Start managing your expenses today.</p>
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="email">Email</label>
+        {error && (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        )}
 
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            autoComplete="email"
-          />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="auth-field">
+            <label htmlFor="name">Full name</label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+              autoComplete="name"
+              placeholder="John Smith"
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="email">Email address</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              autoComplete="new-password"
+              placeholder="Create a password"
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="confirm-password">Confirm password</label>
+            <input
+              id="confirm-password"
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              required
+              autoComplete="new-password"
+              placeholder="Confirm your password"
+            />
+          </div>
+
+          <button className="auth-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creating account..." : "Create account"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          <span>Already have an account?</span>
+          <Link to="/login">Sign in</Link>
         </div>
-
-        <div>
-          <label htmlFor="password">Password</label>
-
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            autoComplete="new-password"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="confirm-password">Confirm Password</label>
-
-          <input
-            id="confirm-password"
-            type="password"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-            required
-            autoComplete="new-password"
-          />
-        </div>
-
-        {error && <p role="alert">{error}</p>}
-
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Create Account"}
-        </button>
-      </form>
-
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+      </section>
     </main>
   );
 }

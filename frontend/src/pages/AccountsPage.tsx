@@ -9,6 +9,7 @@ import { getApiErrorMessage } from "../lib/api-error";
 import { AccountForm } from "../features/accounts/AccountForm";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { LoadingMessage } from "../components/ui/LoadingMessage";
 
 export function AccountsPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -81,7 +82,7 @@ export function AccountsPage() {
   }
 
   if (isLoading) {
-    return <p>Loading accounts...</p>;
+    return <LoadingMessage message="Loading accounts..." />;
   }
 
   return (

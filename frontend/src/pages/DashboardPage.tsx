@@ -4,10 +4,18 @@ import {
   type Dashboard,
 } from "../features/dashboard/dashboard.api";
 import { getApiErrorMessage } from "../lib/api-error";
+import { LoadingMessage } from "../components/ui/LoadingMessage";
 import { StatCard } from "../components/ui/StatCard";
 import { AccountList } from "../features/dashboard/AccountList";
 import { RecentTransactions } from "../features/dashboard/RecentTransactions";
 import { SpendingByCategory } from "../features/dashboard/SpendingByCategory";
+
+function formatCurrency(amount: string) {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(Number(amount));
+}
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
@@ -18,9 +26,7 @@ export function DashboardPage() {
     async function loadDashboard() {
       try {
         setError(null);
-
         const response = await getDashboard();
-
         setDashboard(response.dashboard);
       } catch (error) {
         setError(getApiErrorMessage(error, "Unable to load dashboard."));
@@ -33,57 +39,62 @@ export function DashboardPage() {
   }, []);
 
   if (isLoading) {
-    return <p>Loading dashboard...</p>;
+    return <LoadingMessage message="Loading dashboard..." />;
   }
 
   if (error) {
-    return <p role="alert">{error}</p>;
+    return (
+      <p className="page-error" role="alert">
+        {error}
+      </p>
+    );
   }
 
   if (!dashboard) {
-    return <p>No dashboard data available.</p>;
+    return <p className="page-error">No dashboard data available.</p>;
   }
+
+  const netThisMonth =
+    Number(dashboard.summary.totalIncome) -
+    Number(dashboard.summary.totalExpense);
+
+  const period = new Date(
+    dashboard.period.year,
+    dashboard.period.month - 1,
+  ).toLocaleString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <section className="dashboard">
       <div className="dashboard__heading">
         <div>
+          <span className="dashboard__eyebrow">Overview</span>
           <h1>Dashboard</h1>
-
-          <p>
-            {new Date(
-              dashboard.period.year,
-              dashboard.period.month - 1,
-            ).toLocaleString("en-GB", {
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
+          <p>Your financial activity for {period}.</p>
         </div>
       </div>
 
       <div className="dashboard__stats">
         <StatCard
           title="Total Balance"
-          value={`£${dashboard.summary.totalBalance}`}
+          value={formatCurrency(dashboard.summary.totalBalance)}
         />
 
         <StatCard
-          title="Total Income"
-          value={`£${dashboard.summary.totalIncome}`}
+          title="Income"
+          value={formatCurrency(dashboard.summary.totalIncome)}
         />
 
         <StatCard
-          title="Total Expenses"
-          value={`£${dashboard.summary.totalExpense}`}
+          title="Expenses"
+          value={formatCurrency(dashboard.summary.totalExpense)}
         />
 
         <StatCard
           title="Net This Month"
-          value={`£${(
-            Number(dashboard.summary.totalIncome) -
-            Number(dashboard.summary.totalExpense)
-          ).toFixed(2)}`}
+          value={formatCurrency(netThisMonth.toFixed(2))}
         />
       </div>
 
