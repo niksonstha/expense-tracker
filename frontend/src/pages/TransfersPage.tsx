@@ -15,22 +15,35 @@ export function TransfersPage() {
   }
 
   return (
-    <div className="page">
-      <div className="page-header">
+    <section className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1>Transfers</h1>
-          <p>Move money between your accounts.</p>
+          <p className="mb-1 text-sm font-medium text-emerald-600">
+            Money movement
+          </p>
+
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            Transfers
+          </h1>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Move money securely between your accounts.
+          </p>
         </div>
 
         {!isFormOpen && (
-          <Button type="button" onClick={handleAddTransfer}>
+          <Button
+            type="button"
+            onClick={handleAddTransfer}
+            className="w-full sm:w-auto"
+          >
             Add Transfer
           </Button>
         )}
       </div>
 
       {isFormOpen && (
-        <Card>
+        <Card className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <TransferForm
             onSaved={async () => {
               setIsFormOpen(false);
@@ -41,19 +54,39 @@ export function TransfersPage() {
       )}
 
       {!isFormOpen && (
-        <Card>
-          <div className="card-header">
+        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 p-5 sm:p-6">
             <div>
-              <h2>Account Transfers</h2>
-              <p>Move money from one of your accounts to another.</p>
+              <h2 className="text-base font-semibold text-slate-900">
+                Account Transfers
+              </h2>
+
+              <p className="mt-1 text-xs text-slate-500">
+                Move money from one of your accounts to another.
+              </p>
             </div>
           </div>
 
-          <p className="dashboard-empty">
-            Click "Add Transfer" to move money between your accounts.
-          </p>
-        </Card>
+          <div className="px-6 py-16 text-center">
+            <p className="text-sm font-semibold text-slate-700">
+              Ready to move money?
+            </p>
+
+            <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-400">
+              Create a transfer to move money between your accounts without
+              recording it as income or an expense.
+            </p>
+
+            <button
+              type="button"
+              onClick={handleAddTransfer}
+              className="mt-5 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+            >
+              Add Transfer
+            </button>
+          </div>
+        </section>
       )}
-    </div>
+    </section>
   );
 }

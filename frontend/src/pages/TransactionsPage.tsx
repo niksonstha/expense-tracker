@@ -17,6 +17,7 @@ import { TransactionForm } from "../features/transactions/TransactionForm";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { LoadingMessage } from "../components/ui/LoadingMessage";
+import { AlertTriangle, Search, X } from "lucide-react";
 
 export function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -35,6 +36,11 @@ export function TransactionsPage() {
   const [typeFilter, setTypeFilter] = useState<"ALL" | "INCOME" | "EXPENSE">(
     "ALL",
   );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<Transaction | null>(null);
+
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function loadTransactions(page: number) {
     try {
@@ -71,19 +77,16 @@ export function TransactionsPage() {
     void loadTransactions(1);
   }, [typeFilter]);
 
-  async function handleDelete(transaction: Transaction) {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this transaction?",
-    );
-
-    if (!confirmed) {
+  async function handleDelete() {
+    if (!transactionToDelete) {
       return;
     }
 
     try {
       setError(null);
+      setIsDeleting(true);
 
-      await deleteTransaction(transaction.id);
+      await deleteTransaction(transactionToDelete.id);
 
       const nextPage =
         transactions.length === 1 && currentPage > 1
@@ -91,6 +94,8 @@ export function TransactionsPage() {
           : currentPage;
 
       setCurrentPage(nextPage);
+      setTransactionToDelete(null);
+
       await loadTransactions(nextPage);
     } catch (error) {
       setError(
@@ -99,6 +104,8 @@ export function TransactionsPage() {
           "Unable to delete transaction. Please try again.",
         ),
       );
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -117,29 +124,67 @@ export function TransactionsPage() {
     setIsFormOpen(false);
   }
 
+  const filteredTransactions = transactions.filter((transaction) => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) {
+      return true;
+    }
+
+    const account = accounts.find((item) => item.id === transaction.accountId);
+
+    const category = transaction.categoryId
+      ? categories.find((item) => item.id === transaction.categoryId)
+      : undefined;
+
+    return [
+      transaction.description,
+      transaction.type,
+      account?.name,
+      category?.name,
+      transaction.amount,
+    ]
+      .filter((value): value is string => Boolean(value))
+      .some((value) => value.toLowerCase().includes(query));
+  });
+
   return (
-    <div className="page">
-      <div className="page-header">
+    <section className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1>Transactions</h1>
-          <p>Manage your income and expenses.</p>
+          <p className="mb-1 text-sm font-medium text-emerald-600">Activity</p>
+
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            Transactions
+          </h1>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Manage your income and expenses.
+          </p>
         </div>
 
         {!isFormOpen && (
-          <Button type="button" onClick={handleAddTransaction}>
+          <Button
+            type="button"
+            onClick={handleAddTransaction}
+            className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 sm:w-auto"
+          >
             Add Transaction
           </Button>
         )}
       </div>
 
       {error && (
-        <p role="alert" className="form-error">
+        <div
+          role="alert"
+          className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
           {error}
-        </p>
+        </div>
       )}
 
       {isFormOpen && (
-        <Card>
+        <Card className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <TransactionForm
             transaction={editingTransaction}
             onSaved={async () => {
@@ -152,113 +197,213 @@ export function TransactionsPage() {
         </Card>
       )}
 
-      <Card className="dashboard-section">
-        <div className="dashboard-section__header">
+      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
           <div>
-            <h2>Recent Transactions</h2>
-            <p>View and manage your transaction history.</p>
+            <h2 className="text-base font-semibold text-slate-900">
+              Transaction history
+            </h2>
+
+            <p className="mt-1 text-xs text-slate-500">
+              View and manage your transaction history.
+            </p>
           </div>
 
-          <div className="form-field">
-            <label htmlFor="transaction-type-filter">Type</label>
-            <select
-              id="transaction-type-filter"
-              value={typeFilter}
-              onChange={(event) => {
-                const value = event.target.value as
-                  | "ALL"
-                  | "INCOME"
-                  | "EXPENSE";
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <div className="relative w-full sm:w-64">
+              <label htmlFor="transaction-search" className="sr-only">
+                Search transactions
+              </label>
 
-                setTypeFilter(value);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="ALL">All</option>
-              <option value="INCOME">Income</option>
-              <option value="EXPENSE">Expense</option>
-            </select>
+              <Search
+                size={17}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+
+              <input
+                id="transaction-search"
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search transactions..."
+                className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              />
+            </div>
+
+            <div className="w-full sm:w-44">
+              <label htmlFor="transaction-type-filter" className="sr-only">
+                Filter by transaction type
+              </label>
+
+              <select
+                id="transaction-type-filter"
+                value={typeFilter}
+                onChange={(event) => {
+                  const value = event.target.value as
+                    | "ALL"
+                    | "INCOME"
+                    | "EXPENSE";
+
+                  setTypeFilter(value);
+                  setCurrentPage(1);
+                }}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              >
+                <option value="ALL">All transactions</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expenses</option>
+              </select>
+            </div>
           </div>
         </div>
 
         {isLoading ? (
-          <LoadingMessage message="Loading transactions..." />
-        ) : transactions.length === 0 ? (
-          <p className="dashboard-empty">No transactions yet.</p>
+          <div className="p-6">
+            <LoadingMessage message="Loading transactions..." />
+          </div>
+        ) : filteredTransactions.length === 0 ? (
+          <div className="px-6 py-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+              <span className="text-lg">£</span>
+            </div>
+
+            <p className="mt-4 text-sm font-semibold text-slate-700">
+              No transactions found
+            </p>
+
+            <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-400">
+              There are no transactions matching the current filter.
+            </p>
+
+            {!isFormOpen && (
+              <button
+                type="button"
+                onClick={handleAddTransaction}
+                className="mt-5 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+              >
+                Add Transaction
+              </button>
+            )}
+          </div>
         ) : (
-          <div className="transaction-list">
-            {transactions.map((transaction) => {
-              const account = accounts.find(
-                (item) => item.id === transaction.accountId,
-              );
+          <>
+            <div className="divide-y divide-slate-100">
+              {filteredTransactions.map((transaction) => {
+                const account = accounts.find(
+                  (item) => item.id === transaction.accountId,
+                );
 
-              const category = transaction.categoryId
-                ? categories.find((item) => item.id === transaction.categoryId)
-                : undefined;
+                const category = transaction.categoryId
+                  ? categories.find(
+                      (item) => item.id === transaction.categoryId,
+                    )
+                  : undefined;
 
-              return (
-                <article className="transaction-row" key={transaction.id}>
-                  <div>
-                    <h3>{transaction.description ?? transaction.type}</h3>
+                const isIncome = transaction.direction === "IN";
 
-                    <p>
-                      {account?.name ?? "Unknown account"}
-                      {" · "}
-                      {category?.name ?? "No category"}
-                      {" · "}
-                      {transaction.transactionDate}
-                    </p>
-                  </div>
+                return (
+                  <article
+                    key={transaction.id}
+                    className="group flex flex-col gap-4 p-5 transition hover:bg-slate-50/70 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div
+                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
+                          isIncome
+                            ? "bg-emerald-50 text-emerald-600"
+                            : transaction.type === "TRANSFER"
+                              ? "bg-blue-50 text-blue-600"
+                              : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        <span className="text-base font-bold">
+                          {isIncome
+                            ? "+"
+                            : transaction.type === "TRANSFER"
+                              ? "↔"
+                              : "−"}
+                        </span>
+                      </div>
 
-                  <div className="transaction-row__right">
-                    <strong
-                      className={
-                        transaction.direction === "IN"
-                          ? "transaction-amount transaction-amount--income"
-                          : "transaction-amount transaction-amount--expense"
-                      }
-                    >
-                      {transaction.direction === "IN" ? "+" : "-"}£
-                      {transaction.amount}
-                    </strong>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="truncate text-sm font-semibold text-slate-900">
+                            {transaction.description ?? transaction.type}
+                          </h3>
 
-                    <div className="transaction-row__actions">
-                      {transaction.type !== "TRANSFER" && (
+                          {transaction.type === "TRANSFER" && (
+                            <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">
+                              Transfer
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="mt-1 truncate text-xs text-slate-500">
+                          {account?.name ?? "Unknown account"}
+                          {" · "}
+                          {category?.name ?? "No category"}
+                          {" · "}
+                          {new Date(
+                            transaction.transactionDate,
+                          ).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4 sm:justify-end">
+                      <strong
+                        className={`text-sm font-semibold ${
+                          isIncome ? "text-emerald-600" : "text-slate-900"
+                        }`}
+                      >
+                        {isIncome ? "+" : "-"}£{transaction.amount}
+                      </strong>
+
+                      <div className="flex items-center gap-2 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
+                        {transaction.type !== "TRANSFER" && (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => handleEditTransaction(transaction)}
+                            className="px-3 py-2 text-xs"
+                          >
+                            Edit
+                          </Button>
+                        )}
+
                         <Button
                           type="button"
-                          variant="secondary"
-                          onClick={() => handleEditTransaction(transaction)}
+                          variant="danger"
+                          onClick={() => setTransactionToDelete(transaction)}
+                          className="px-3 py-2 text-xs"
                         >
-                          Edit
+                          Delete
                         </Button>
-                      )}
-
-                      <Button
-                        type="button"
-                        variant="danger"
-                        onClick={() => void handleDelete(transaction)}
-                      >
-                        Delete
-                      </Button>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
+                  </article>
+                );
+              })}
+            </div>
 
             {!isLoading && totalPages > 1 && (
-              <div className="pagination">
+              <div className="flex items-center justify-between border-t border-slate-100 px-5 py-4 sm:px-6">
                 <button
                   type="button"
                   disabled={!hasPreviousPage}
                   onClick={() => {
                     void loadTransactions(currentPage - 1);
                   }}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Previous
                 </button>
 
-                <span>
+                <span className="text-xs font-medium text-slate-500">
                   Page {currentPage} of {totalPages}
                 </span>
 
@@ -268,14 +413,90 @@ export function TransactionsPage() {
                   onClick={() => {
                     void loadTransactions(currentPage + 1);
                   }}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Next
                 </button>
               </div>
             )}
-          </div>
+          </>
         )}
-      </Card>
-    </div>
+      </section>
+      {transactionToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-transaction-title"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
+                <AlertTriangle size={20} />
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2
+                      id="delete-transaction-title"
+                      className="text-base font-semibold text-slate-900"
+                    >
+                      Delete transaction?
+                    </h2>
+
+                    <p className="mt-1 text-sm leading-5 text-slate-500">
+                      This action cannot be undone.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setTransactionToDelete(null)}
+                    disabled={isDeleting}
+                    aria-label="Close confirmation"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
+                  <p className="truncate text-sm font-semibold text-slate-800">
+                    {transactionToDelete.description ??
+                      transactionToDelete.type}
+                  </p>
+
+                  <p className="mt-1 text-xs text-slate-500">
+                    {transactionToDelete.direction === "IN" ? "+" : "-"}£
+                    {transactionToDelete.amount}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setTransactionToDelete(null)}
+                disabled={isDeleting}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void handleDelete()}
+                disabled={isDeleting}
+                className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isDeleting ? "Deleting..." : "Delete transaction"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
