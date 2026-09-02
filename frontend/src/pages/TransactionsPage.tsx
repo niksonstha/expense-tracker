@@ -1,17 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useState } from "react";
 
-import { getApiErrorMessage } from "../../lib/api-error";
-import { TransactionForm } from "./TransactionForm";
+import { useEffect, useState } from "react";
 import {
   deleteTransaction,
   getTransactions,
   type Transaction,
-} from "./transactions.api";
-
-import { getAccounts, type Account } from "../accounts/accounts.api";
-import { getCategories, type Category } from "../categories/categories.api";
+} from "../features/transactions/transactions.api";
+import { getAccounts, type Account } from "../features/accounts/accounts.api";
+import {
+  getCategories,
+  type Category,
+} from "../features/categories/categories.api";
+import { getApiErrorMessage } from "../lib/api-error";
+import { TransactionForm } from "../features/transactions/TransactionForm";
+import { Button } from "../components/ui/Button";
+import { Card } from "../components/ui/Card";
 
 export function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -96,7 +99,7 @@ export function TransactionsPage() {
   }, [typeFilter]);
 
   return (
-    <section className="page">
+    <Card className="page">
       <div className="page__header">
         <div>
           <h2>Transactions</h2>
@@ -117,7 +120,7 @@ export function TransactionsPage() {
         }}
       />
 
-      <section className="dashboard-section">
+      <Card className="dashboard-section">
         <div className="dashboard-section__header">
           <h2>Recent Transactions</h2>
         </div>
@@ -186,22 +189,24 @@ export function TransactionsPage() {
                       </strong>
 
                       {transaction.type !== "TRANSFER" && (
-                        <button
+                        <Button
                           type="button"
+                          variant="secondary"
                           onClick={() => setEditingTransaction(transaction)}
                         >
                           Edit
-                        </button>
+                        </Button>
                       )}
                     </div>
 
                     <div className="transaction-row__actions">
-                      <button
+                      <Button
                         type="button"
+                        variant="danger"
                         onClick={() => void handleDelete(transaction)}
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </article>
@@ -237,7 +242,7 @@ export function TransactionsPage() {
             )}
           </div>
         )}
-      </section>
-    </section>
+      </Card>
+    </Card>
   );
 }

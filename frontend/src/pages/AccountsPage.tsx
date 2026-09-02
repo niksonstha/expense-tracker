@@ -1,9 +1,13 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
-
-import { getApiErrorMessage } from "../../lib/api-error";
-import { deleteAccount, getAccounts, type Account } from "./accounts.api";
-import { AccountForm } from "./AccountForm";
+import {
+  deleteAccount,
+  getAccounts,
+  type Account,
+} from "../features/accounts/accounts.api";
+import { getApiErrorMessage } from "../lib/api-error";
+import { AccountForm } from "../features/accounts/AccountForm";
+import { Button } from "../components/ui/Button";
+import { Card } from "../components/ui/Card";
 
 export function AccountsPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -63,7 +67,7 @@ export function AccountsPage() {
   }
 
   return (
-    <section className="page">
+    <Card className="page">
       <div className="page__header">
         <div>
           <h2>Accounts</h2>
@@ -82,7 +86,7 @@ export function AccountsPage() {
         onCancel={() => setEditingAccount(null)}
       />
 
-      <section className="dashboard-section">
+      <Card className="dashboard-section">
         <div className="dashboard-section__header">
           <h2>Your Accounts</h2>
         </div>
@@ -102,26 +106,28 @@ export function AccountsPage() {
                   <strong>£{account.balance}</strong>
 
                   <div className="account-card__actions">
-                    <button
+                    <Button
                       type="button"
+                      variant="secondary"
                       onClick={() => setEditingAccount(account)}
                     >
                       Edit
-                    </button>
+                    </Button>
 
-                    <button
+                    <Button
                       type="button"
+                      variant="danger"
                       onClick={() => void handleDelete(account)}
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </article>
             ))}
           </div>
         )}
-      </section>
-    </section>
+      </Card>
+    </Card>
   );
 }

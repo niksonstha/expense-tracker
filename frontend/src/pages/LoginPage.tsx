@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getApiErrorMessage } from "../../lib/api-error";
+import { useAuth } from "../features/auth/auth.context";
+import { getApiErrorMessage } from "../lib/api-error";
 
-import { useAuth } from "./auth.context";
 
 interface LoginLocationState {
   from?: {

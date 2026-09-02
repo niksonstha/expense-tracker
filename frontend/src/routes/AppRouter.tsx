@@ -1,12 +1,14 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import { DashboardPage } from "../features/dashboard/DashboardPage";
-import { RegisterPage } from "../features/auth/RegisterPage";
-import { LoginPage } from "../features/auth/LoginPage";
+import { DashboardPage } from "../pages/DashboardPage";
+import { RegisterPage } from "../pages/RegisterPage";
+import { LoginPage } from "../pages/LoginPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppLayout } from "../layouts/AppLayout";
-import { AccountsPage } from "../features/accounts/AccountsPage";
-import { TransactionsPage } from "../features/transactions/TransactionsPage";
+
+import { CategoriesPage } from "../pages/CategoriesPage";
+import { AccountsPage } from "../pages/AccountsPage";
+import { TransactionsPage } from "../pages/TransactionsPage";
 
 export function AppRouter() {
   return (
@@ -20,6 +22,7 @@ export function AppRouter() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/accounts" element={<AccountsPage />} />
             <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
           </Route>
         </Route>
 

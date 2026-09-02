@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { getDashboard, type Dashboard } from "../features/dashboard/dashboard.api";
+import { getApiErrorMessage } from "../lib/api-error";
+import { StatCard } from "../components/ui/StatCard";
+import { AccountList } from "../features/dashboard/AccountList";
+import { RecentTransactions } from "../features/dashboard/RecentTransactions";
+import { SpendingByCategory } from "../features/dashboard/SpendingByCategory";
 
-import { getDashboard, type Dashboard } from "./dashboard.api";
-import { StatCard } from "../../components/ui/StatCard";
-import { AccountList } from "./AccountList";
-import { RecentTransactions } from "./RecentTransactions";
-import { SpendingByCategory } from "./SpendingByCategory";
-import { getApiErrorMessage } from "../../lib/api-error";
+
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);

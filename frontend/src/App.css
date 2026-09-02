@@ -167,7 +167,7 @@
 
   &::before,
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     top: -4.5px;
     border: 5px solid transparent;
@@ -181,4 +181,32 @@
     right: 0;
     border-right-color: var(--border);
   }
+}
+
+.button--primary {
+  background: #111827;
+  color: #ffffff;
+}
+
+.button--primary:hover {
+  background: #1f2937;
+}
+
+.button--secondary {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
+
+.button--secondary:hover {
+  background: #f3f4f6;
+}
+
+.button--danger {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.button--danger:hover {
+  background: #b91c1c;
 }

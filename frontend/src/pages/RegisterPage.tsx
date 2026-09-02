@@ -1,9 +1,8 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import { registerUser } from "./auth.api";
-import { getApiErrorMessage } from "../../lib/api-error";
+import { registerUser } from "../features/auth/auth.api";
+import { getApiErrorMessage } from "../lib/api-error";
 
 export function RegisterPage() {
   const navigate = useNavigate();
