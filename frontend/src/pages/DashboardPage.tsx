@@ -15,12 +15,13 @@ import {
   type Dashboard,
 } from "../features/dashboard/dashboard.api";
 import { getApiErrorMessage } from "../lib/api-error";
-import { LoadingMessage } from "../components/ui/LoadingMessage";
 import { StatCard } from "../components/ui/StatCard";
 import { AccountList } from "../features/dashboard/AccountList";
 import { RecentTransactions } from "../features/dashboard/RecentTransactions";
 import { SpendingByCategory } from "../features/dashboard/SpendingByCategory";
 import { AddExpenseModal } from "../features/transactions/AddExpenseModal";
+import { DashboardSkeleton } from "../components/ui/DashboardSkeleton";
+import { useToast } from "../components/ui/ToastProvider";
 
 function formatCurrency(amount: string) {
   return new Intl.NumberFormat("en-GB", {
@@ -34,6 +35,7 @@ export function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const toast = useToast();
 
   async function loadDashboard() {
     try {
@@ -54,7 +56,7 @@ export function DashboardPage() {
   }, []);
 
   if (isLoading) {
-    return <LoadingMessage message="Loading dashboard..." />;
+    return <DashboardSkeleton />;
   }
 
   if (error) {
@@ -173,6 +175,8 @@ export function DashboardPage() {
         isOpen={isExpenseModalOpen}
         onClose={() => setIsExpenseModalOpen(false)}
         onSuccess={() => {
+          toast.success("Expense added successfully");
+          setIsExpenseModalOpen(false);
           void loadDashboard();
         }}
       />

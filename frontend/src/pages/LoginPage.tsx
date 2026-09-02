@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Lock, Mail, Moon, ShieldCheck, Sun, Wallet } from "lucide-react";
+import { Loader2, Lock, Mail, Moon, ShieldCheck, Sun } from "lucide-react";
 import { useAuth } from "../features/auth/auth.context";
 import { getApiErrorMessage } from "../lib/api-error";
 import { useTheme } from "../hooks/useTheme";
@@ -192,10 +192,9 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-600/30 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-emerald-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Wallet size={18} />
-
+              {isSubmitting && <Loader2 size={16} className="animate-spin" />}
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>

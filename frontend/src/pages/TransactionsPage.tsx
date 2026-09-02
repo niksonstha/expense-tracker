@@ -20,8 +20,10 @@ import { getApiErrorMessage } from "../lib/api-error";
 import { TransactionForm } from "../features/transactions/TransactionForm";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
-import { LoadingMessage } from "../components/ui/LoadingMessage";
-import { AlertTriangle, Search, X } from "lucide-react";
+import { Plus, Search, WalletCards } from "lucide-react";
+import { useToast } from "../components/ui/ToastProvider";
+import { TransactionSkeleton } from "../components/ui/TransactionSkeleton";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 
 export function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -44,6 +46,8 @@ export function TransactionsPage() {
   const [transactionToDelete, setTransactionToDelete] =
     useState<Transaction | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const toast = useToast();
 
   async function loadTransactions(page: number) {
     try {
@@ -91,6 +95,8 @@ export function TransactionsPage() {
 
       await deleteTransaction(transactionToDelete.id);
 
+      toast.success("Transaction deleted successfully");
+
       const nextPage =
         transactions.length === 1 && currentPage > 1
           ? currentPage - 1
@@ -101,12 +107,13 @@ export function TransactionsPage() {
 
       await loadTransactions(nextPage);
     } catch (error) {
-      setError(
-        getApiErrorMessage(
-          error,
-          "Unable to delete transaction. Please try again.",
-        ),
+      const message = getApiErrorMessage(
+        error,
+        "Unable to delete transaction. Please try again.",
       );
+
+      setError(message);
+      toast.error(message);
     } finally {
       setIsDeleting(false);
     }
@@ -193,8 +200,15 @@ export function TransactionsPage() {
           <TransactionForm
             transaction={editingTransaction}
             onSaved={async () => {
+              toast.success(
+                editingTransaction
+                  ? "Transaction updated successfully"
+                  : "Transaction added successfully",
+              );
+
               setEditingTransaction(undefined);
               setIsFormOpen(false);
+
               await loadTransactions(currentPage);
             }}
             onCancel={handleCancelForm}
@@ -263,31 +277,47 @@ export function TransactionsPage() {
         </div>
 
         {isLoading ? (
-          <div className="p-6">
-            <LoadingMessage message="Loading transactions..." />
-          </div>
+          <TransactionSkeleton />
         ) : filteredTransactions.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
-              <span className="text-lg">£</span>
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+              <WalletCards size={24} />
             </div>
 
             <p className="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
-              No transactions found
+              {searchQuery.trim() || typeFilter !== "ALL"
+                ? "No matching transactions"
+                : "No transactions yet"}
             </p>
 
             <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-400 dark:text-slate-500">
-              There are no transactions matching the current filter.
+              {searchQuery.trim() || typeFilter !== "ALL"
+                ? "Try a different search or filter to find what you're looking for."
+                : "Start tracking your finances by adding your first transaction."}
             </p>
 
-            {!isFormOpen && (
+            {searchQuery.trim() || typeFilter !== "ALL" ? (
               <button
                 type="button"
-                onClick={handleAddTransaction}
-                className="mt-5 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950"
+                onClick={() => {
+                  setSearchQuery("");
+                  setTypeFilter("ALL");
+                }}
+                className="mt-5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 hover:shadow dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
               >
-                Add Transaction
+                Clear filters
               </button>
+            ) : (
+              !isFormOpen && (
+                <button
+                  type="button"
+                  onClick={handleAddTransaction}
+                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950"
+                >
+                  <Plus size={17} />
+                  Add Transaction
+                </button>
+              )
             )}
           </div>
         ) : (
@@ -430,81 +460,19 @@ export function TransactionsPage() {
         )}
       </section>
 
-      {transactionToDelete && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm dark:bg-black/60"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-transaction-title"
-        >
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400">
-                <AlertTriangle size={20} />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2
-                      id="delete-transaction-title"
-                      className="text-base font-semibold text-slate-900 dark:text-white"
-                    >
-                      Delete transaction?
-                    </h2>
-
-                    <p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
-                      This action cannot be undone.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setTransactionToDelete(null)}
-                    disabled={isDeleting}
-                    aria-label="Close confirmation"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
-                  <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
-                    {transactionToDelete.description ??
-                      transactionToDelete.type}
-                  </p>
-
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    {transactionToDelete.direction === "IN" ? "+" : "-"}£
-                    {transactionToDelete.amount}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <button
-                type="button"
-                onClick={() => setTransactionToDelete(null)}
-                disabled={isDeleting}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={() => void handleDelete()}
-                disabled={isDeleting}
-                className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isDeleting ? "Deleting..." : "Delete transaction"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={Boolean(transactionToDelete)}
+        title="Delete transaction?"
+        description={
+          transactionToDelete
+            ? `Delete "${transactionToDelete.description ?? transactionToDelete.type}"? This action cannot be undone.`
+            : "This action cannot be undone."
+        }
+        confirmLabel="Delete transaction"
+        isLoading={isDeleting}
+        onCancel={() => setTransactionToDelete(null)}
+        onConfirm={() => void handleDelete()}
+      />
     </section>
   );
 }

@@ -12,13 +12,14 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { LoadingMessage } from "../components/ui/LoadingMessage";
 import {
-  AlertTriangle,
   Banknote,
   CreditCard,
   Landmark,
+  Plus,
   Wallet,
-  X,
+  WalletCards,
 } from "lucide-react";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 
 function formatAccountType(type: Account["type"]) {
   return type
@@ -198,20 +199,26 @@ export function AccountsPage() {
 
         {accounts.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+              <WalletCards size={24} />
+            </div>
+
+            <p className="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
               No accounts yet
             </p>
 
             <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-400 dark:text-slate-500">
-              Add your first account to start tracking your finances.
+              Add your first bank account, savings account, or card to start
+              tracking your finances.
             </p>
 
             {!isFormOpen && (
               <button
                 type="button"
                 onClick={handleAddAccount}
-                className="mt-5 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+                className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
               >
+                <Plus size={17} />
                 Add Account
               </button>
             )}
@@ -286,80 +293,19 @@ export function AccountsPage() {
         )}
       </section>
 
-      {accountToDelete && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm dark:bg-black/60"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-account-title"
-        >
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400">
-                <AlertTriangle size={20} />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2
-                      id="delete-account-title"
-                      className="text-base font-semibold text-slate-900 dark:text-white"
-                    >
-                      Delete account?
-                    </h2>
-
-                    <p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
-                      This action cannot be undone.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setAccountToDelete(null)}
-                    disabled={isDeleting}
-                    aria-label="Close confirmation"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-950">
-                  <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
-                    {accountToDelete.name}
-                  </p>
-
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    {formatAccountType(accountToDelete.type)} · £
-                    {accountToDelete.balance}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <button
-                type="button"
-                onClick={() => setAccountToDelete(null)}
-                disabled={isDeleting}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={() => void handleDelete()}
-                disabled={isDeleting}
-                className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isDeleting ? "Deleting..." : "Delete account"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={Boolean(accountToDelete)}
+        title="Delete account?"
+        description={
+          accountToDelete
+            ? `Delete "${accountToDelete.name}"? This action cannot be undone.`
+            : "This action cannot be undone."
+        }
+        confirmLabel="Delete account"
+        isLoading={isDeleting}
+        onCancel={() => setAccountToDelete(null)}
+        onConfirm={() => void handleDelete()}
+      />
     </section>
   );
 }

@@ -5,6 +5,7 @@ import {
   ArrowRightLeft,
   CalendarDays,
   FileText,
+  Loader2,
   Wallet,
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
@@ -326,7 +327,12 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
             </Button>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="min-w-36">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="min-w-36 gap-2"
+          >
+            {isSubmitting && <Loader2 size={16} className="animate-spin" />}
             {isSubmitting ? "Saving..." : "Add Transfer"}
           </Button>
         </div>

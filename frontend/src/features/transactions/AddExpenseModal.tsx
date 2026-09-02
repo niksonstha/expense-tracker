@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { createTransaction } from "./transactions.api";
 import { getAccounts, type Account } from "../accounts/accounts.api";
 import { getCategories, type Category } from "../categories/categories.api";
@@ -125,12 +125,12 @@ export function AddExpenseModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm dark:bg-black/60"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm animate-in fade-in duration-200 dark:bg-black/60"
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-expense-title"
     >
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
           <div>
             <h2
@@ -276,8 +276,9 @@ export function AddExpenseModal({
             <button
               type="submit"
               disabled={isSubmitting || isLoadingData}
-              className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
+              {isSubmitting && <Loader2 size={16} className="animate-spin" />}
               {isSubmitting ? "Adding..." : "Add expense"}
             </button>
           </div>
