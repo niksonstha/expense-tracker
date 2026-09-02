@@ -19,7 +19,6 @@ export function AddExpenseModal({
 }: AddExpenseModalProps) {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [accountId, setAccountId] = useState("");
@@ -27,7 +26,6 @@ export function AddExpenseModal({
   const [transactionDate, setTransactionDate] = useState(
     new Date().toISOString().split("T")[0],
   );
-
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +46,7 @@ export function AddExpenseModal({
         ]);
 
         setAccounts(accountsResponse.accounts);
+
         setCategories(
           categoriesResponse.categories.filter(
             (category) => category.type === "EXPENSE",
@@ -76,7 +75,6 @@ export function AddExpenseModal({
     setCategoryId("");
     setTransactionDate(new Date().toISOString().split("T")[0]);
     setError(null);
-
     onClose();
   }
 
@@ -119,24 +117,32 @@ export function AddExpenseModal({
     return null;
   }
 
+  const inputStyles =
+    "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-emerald-500 dark:focus:ring-emerald-950/50 dark:disabled:bg-slate-900";
+
+  const labelStyles =
+    "mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300";
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm dark:bg-black/60"
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-expense-title"
     >
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
           <div>
             <h2
               id="add-expense-title"
-              className="text-lg font-semibold text-slate-900"
+              className="text-lg font-semibold text-slate-900 dark:text-white"
             >
               Add expense
             </h2>
 
-            <p className="mt-1 text-xs text-slate-500">Record a new expense.</p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              Record a new expense.
+            </p>
           </div>
 
           <button
@@ -144,7 +150,7 @@ export function AddExpenseModal({
             onClick={handleClose}
             disabled={isSubmitting}
             aria-label="Close add expense"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           >
             <X size={19} />
           </button>
@@ -154,17 +160,14 @@ export function AddExpenseModal({
           {error && (
             <div
               role="alert"
-              className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700"
+              className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400"
             >
               {error}
             </div>
           )}
 
           <div>
-            <label
-              htmlFor="expense-amount"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="expense-amount" className={labelStyles}>
               Amount
             </label>
 
@@ -177,15 +180,12 @@ export function AddExpenseModal({
               onChange={(event) => setAmount(event.target.value)}
               placeholder="0.00"
               disabled={isSubmitting}
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="expense-description"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="expense-description" className={labelStyles}>
               Description
             </label>
 
@@ -196,15 +196,12 @@ export function AddExpenseModal({
               onChange={(event) => setDescription(event.target.value)}
               placeholder="e.g. Grocery shopping"
               disabled={isSubmitting}
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50"
+              className={inputStyles}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="expense-account"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="expense-account" className={labelStyles}>
               Account
             </label>
 
@@ -213,7 +210,7 @@ export function AddExpenseModal({
               value={accountId}
               onChange={(event) => setAccountId(event.target.value)}
               disabled={isLoadingData || isSubmitting}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50"
+              className={inputStyles}
             >
               <option value="">
                 {isLoadingData ? "Loading accounts..." : "Select an account"}
@@ -228,10 +225,7 @@ export function AddExpenseModal({
           </div>
 
           <div>
-            <label
-              htmlFor="expense-category"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="expense-category" className={labelStyles}>
               Category
             </label>
 
@@ -240,7 +234,7 @@ export function AddExpenseModal({
               value={categoryId}
               onChange={(event) => setCategoryId(event.target.value)}
               disabled={isLoadingData || isSubmitting}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50"
+              className={inputStyles}
             >
               <option value="">
                 {isLoadingData ? "Loading categories..." : "Select a category"}
@@ -255,10 +249,7 @@ export function AddExpenseModal({
           </div>
 
           <div>
-            <label
-              htmlFor="expense-date"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="expense-date" className={labelStyles}>
               Date
             </label>
 
@@ -268,7 +259,7 @@ export function AddExpenseModal({
               value={transactionDate}
               onChange={(event) => setTransactionDate(event.target.value)}
               disabled={isSubmitting}
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50"
+              className={inputStyles}
             />
           </div>
 
@@ -277,7 +268,7 @@ export function AddExpenseModal({
               type="button"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </button>

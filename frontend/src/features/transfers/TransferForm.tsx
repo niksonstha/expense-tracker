@@ -60,6 +60,7 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
+
     setError(null);
 
     if (fromAccountId === toAccountId) {
@@ -97,9 +98,10 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
   }
 
   const inputStyles =
-    "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50";
+    "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-emerald-500 dark:focus:ring-emerald-950/50 dark:disabled:bg-slate-900";
 
-  const labelStyles = "mb-1.5 block text-sm font-medium text-slate-700";
+  const labelStyles =
+    "mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300";
 
   if (isLoading) {
     return <LoadingMessage message="Loading accounts..." />;
@@ -109,28 +111,32 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
     return (
       <div className="py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
             <Wallet size={18} />
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
               Add Transfer
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Move money between your accounts.
             </p>
           </div>
         </div>
 
-        <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
-          <Wallet size={30} className="mx-auto text-slate-300" />
+        <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center dark:border-slate-700 dark:bg-slate-950/50">
+          <Wallet
+            size={30}
+            className="mx-auto text-slate-300 dark:text-slate-600"
+          />
 
-          <p className="mt-3 text-sm font-semibold text-slate-700">
+          <p className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
             You need at least two accounts
           </p>
 
-          <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-400">
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-400 dark:text-slate-500">
             Create another account before making a transfer between accounts.
           </p>
         </div>
@@ -149,14 +155,16 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
   return (
     <section>
       <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
           <ArrowRightLeft size={18} />
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Add Transfer</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            Add Transfer
+          </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Move money from one account to another.
           </p>
         </div>
@@ -165,15 +173,15 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
           <div
-            className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400"
             role="alert"
           >
             {error}
           </div>
         )}
 
-        <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 sm:p-5">
-          <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/50 sm:p-5">
+          <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             <ArrowRightLeft size={15} />
             Transfer route
           </div>
@@ -202,7 +210,7 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
               </select>
             </div>
 
-            <div className="hidden h-11 items-center justify-center text-slate-300 sm:flex">
+            <div className="hidden h-11 items-center justify-center text-slate-300 dark:text-slate-600 sm:flex">
               <ArrowRight size={20} />
             </div>
 
@@ -238,7 +246,7 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
             </label>
 
             <div className="relative">
-              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400">
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 dark:text-slate-500">
                 £
               </span>
 
@@ -266,7 +274,7 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
             <div className="relative">
               <CalendarDays
                 size={17}
-                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
               />
 
               <input
@@ -290,7 +298,7 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
           <div className="relative">
             <FileText
               size={17}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
             />
 
             <input
@@ -306,7 +314,7 @@ export function TransferForm({ onSaved, onCancel }: TransferFormProps) {
           </div>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 dark:border-slate-800 sm:flex-row sm:justify-end">
           {onCancel && (
             <Button
               type="button"

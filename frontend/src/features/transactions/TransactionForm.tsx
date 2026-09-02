@@ -142,18 +142,19 @@ export function TransactionForm({
   }
 
   const inputStyles =
-    "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50";
+    "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-emerald-500 dark:focus:ring-emerald-950/50 dark:disabled:bg-slate-900";
 
-  const labelStyles = "mb-1.5 block text-sm font-medium text-slate-700";
+  const labelStyles =
+    "mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300";
 
   if (isLoadingOptions) {
     return (
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
             {transaction ? "Edit Transaction" : "Add Transaction"}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Loading your accounts and categories...
           </p>
         </div>
@@ -165,14 +166,17 @@ export function TransactionForm({
 
   if (accounts.length === 0) {
     return (
-      <section className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-10 text-center">
-        <Wallet className="mx-auto text-slate-300" size={30} />
+      <section className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-10 text-center dark:border-slate-700 dark:bg-slate-900/50">
+        <Wallet
+          className="mx-auto text-slate-300 dark:text-slate-600"
+          size={30}
+        />
 
-        <h2 className="mt-3 text-base font-semibold text-slate-700">
+        <h2 className="mt-3 text-base font-semibold text-slate-700 dark:text-slate-200">
           No accounts available
         </h2>
 
-        <p className="mx-auto mt-1 max-w-sm text-sm text-slate-400">
+        <p className="mx-auto mt-1 max-w-sm text-sm text-slate-400 dark:text-slate-500">
           You need to create an account before adding a transaction.
         </p>
 
@@ -180,7 +184,7 @@ export function TransactionForm({
           <button
             type="button"
             onClick={onCancel}
-            className="mt-5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+            className="mt-5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             Cancel
           </button>
@@ -193,11 +197,11 @@ export function TransactionForm({
     <section>
       <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
             {transaction ? "Edit Transaction" : "Add Transaction"}
           </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {transaction
               ? "Update the details of this transaction."
               : "Record a new income or expense."}
@@ -208,7 +212,7 @@ export function TransactionForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
           <div
-            className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400"
             role="alert"
           >
             {error}
@@ -256,8 +260,8 @@ export function TransactionForm({
                 disabled={isSubmitting}
                 className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
                   type === "EXPENSE"
-                    ? "border-slate-300 bg-slate-100 text-slate-800"
-                    : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+                    ? "border-slate-300 bg-slate-100 text-slate-800 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                    : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900"
                 }`}
               >
                 <ArrowUpRight size={17} />
@@ -270,8 +274,8 @@ export function TransactionForm({
                 disabled={isSubmitting}
                 className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
                   type === "INCOME"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400"
+                    : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900"
                 }`}
               >
                 <ArrowDownLeft size={17} />
@@ -389,13 +393,13 @@ export function TransactionForm({
           </div>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 dark:border-slate-800 sm:flex-row sm:justify-end">
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </button>

@@ -1,4 +1,7 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+{
+  /* eslint-disable react-hooks/set-state-in-effect */
+}
+
 import { useEffect, useState } from "react";
 import {
   ArrowDownLeft,
@@ -7,7 +10,6 @@ import {
   Plus,
   Wallet,
 } from "lucide-react";
-
 import {
   getDashboard,
   type Dashboard,
@@ -36,7 +38,9 @@ export function DashboardPage() {
   async function loadDashboard() {
     try {
       setError(null);
+
       const response = await getDashboard();
+
       setDashboard(response.dashboard);
     } catch (error) {
       setError(getApiErrorMessage(error, "Unable to load dashboard."));
@@ -56,11 +60,12 @@ export function DashboardPage() {
   if (error) {
     return (
       <div className="flex min-h-64 items-center justify-center" role="alert">
-        <div className="w-full max-w-md rounded-2xl border border-red-100 bg-red-50 px-5 py-6 text-center">
-          <p className="text-sm font-semibold text-red-700">
+        <div className="w-full max-w-md rounded-2xl border border-red-100 bg-red-50 px-5 py-6 text-center dark:border-red-900/50 dark:bg-red-950/40">
+          <p className="text-sm font-semibold text-red-700 dark:text-red-400">
             Unable to load dashboard
           </p>
-          <p className="mt-1 text-sm text-red-600">{error}</p>
+
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       </div>
     );
@@ -69,11 +74,12 @@ export function DashboardPage() {
   if (!dashboard) {
     return (
       <div className="flex min-h-64 items-center justify-center">
-        <div className="w-full max-w-md rounded-2xl border border-dashed border-slate-200 bg-white px-5 py-8 text-center shadow-sm">
-          <p className="text-sm font-semibold text-slate-700">
+        <div className="w-full max-w-md rounded-2xl border border-dashed border-slate-200 bg-white px-5 py-8 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             No dashboard data available
           </p>
-          <p className="mt-1 text-sm text-slate-400">
+
+          <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">
             There is currently no financial data to display.
           </p>
         </div>
@@ -97,13 +103,15 @@ export function DashboardPage() {
     <section className="space-y-6 sm:space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="mb-1 text-sm font-medium text-emerald-600">Overview</p>
+          <p className="mb-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+            Overview
+          </p>
 
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
             Dashboard
           </h1>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Here's your financial overview for {period}.
           </p>
         </div>
@@ -111,7 +119,7 @@ export function DashboardPage() {
         <button
           type="button"
           onClick={() => setIsExpenseModalOpen(true)}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:w-auto"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950 sm:w-auto"
         >
           <Plus size={18} />
           Add Expense
@@ -153,10 +161,7 @@ export function DashboardPage() {
         </div>
 
         <div className="min-w-0">
-          <SpendingByCategory
-            spending={dashboard.spending}
-            total={dashboard.spendingTotal}
-          />
+          <SpendingByCategory spending={dashboard.spending} />
         </div>
 
         <div className="xl:col-span-2">

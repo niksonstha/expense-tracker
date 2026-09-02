@@ -24,7 +24,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <div className="flex min-h-screen">
         <Sidebar />
 
@@ -44,18 +44,18 @@ export function AppLayout() {
           <button
             type="button"
             aria-label="Close navigation"
-            className="absolute inset-0 bg-slate-900/30"
+            className="absolute inset-0 bg-slate-900/30 dark:bg-black/50"
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          <aside className="relative flex h-full w-72 max-w-[85vw] flex-col bg-white shadow-xl">
-            <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
+          <aside className="relative flex h-full w-72 max-w-[85vw] flex-col bg-white shadow-xl dark:bg-slate-950">
+            <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5 dark:border-slate-800">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-sm font-bold text-white">
                   ET
                 </div>
 
-                <span className="font-semibold text-slate-900">
+                <span className="font-semibold text-slate-900 dark:text-white">
                   Expense Tracker
                 </span>
               </div>
@@ -64,7 +64,7 @@ export function AppLayout() {
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-label="Close navigation"
-                className="rounded-xl p-2 text-slate-500 hover:bg-slate-100"
+                className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-900"
               >
                 <X size={20} />
               </button>
@@ -80,8 +80,8 @@ export function AppLayout() {
                     [
                       "block rounded-xl px-3 py-3 text-sm font-medium transition",
                       isActive
-                        ? "bg-emerald-50 text-emerald-700"
-                        : "text-slate-600 hover:bg-slate-50",
+                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400"
+                        : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100",
                     ].join(" ")
                   }
                 >
@@ -90,11 +90,11 @@ export function AppLayout() {
               ))}
             </nav>
 
-            <div className="border-t border-slate-200 p-4">
+            <div className="border-t border-slate-200 p-4 dark:border-slate-800">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full rounded-xl px-3 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                className="w-full rounded-xl px-3 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
               >
                 Log out
               </button>

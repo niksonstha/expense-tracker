@@ -1,132 +1,133 @@
-import { PieChart } from "lucide-react";
 import type { DashboardSpending } from "./dashboard.api";
 
 interface SpendingByCategoryProps {
   spending: DashboardSpending[];
-  total: string;
 }
 
-function formatCurrency(amount: string) {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-  }).format(Number(amount));
-}
+const categoryColors = [
+  "#10b981",
+  "#3b82f6",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#06b6d4",
+  "#f97316",
+  "#ec4899",
+];
 
-export function SpendingByCategory({
-  spending,
-  total,
-}: SpendingByCategoryProps) {
-  const totalAmount = Number(total);
+export function SpendingByCategory({ spending }: SpendingByCategoryProps) {
+  const total = spending.reduce((sum, item) => sum + Number(item.amount), 0);
 
-  const colors = [
-    "#10b981",
-    "#0ea5e9",
-    "#8b5cf6",
-    "#f59e0b",
-    "#f43f5e",
-    "#94a3b8",
-  ];
-
-  const segments = spending.map((item, index) => {
-    const percentage = Math.min(Math.max(Number(item.percentage), 0), 100);
-
-    const start = spending
-      .slice(0, index)
-      .reduce(
-        (total, previousItem) =>
-          total + Math.min(Math.max(Number(previousItem.percentage), 0), 100),
-        0,
-      );
-
-    return {
-      ...item,
-      percentage,
-      start,
-      end: start + percentage,
-      color: colors[index % colors.length],
-    };
-  });
-
-  const gradient = segments.length
-    ? `conic-gradient(${segments
-        .map((segment) => `${segment.color} ${segment.start}% ${segment.end}%`)
-        .join(", ")})`
-    : "conic-gradient(#e2e8f0 0% 100%)";
-
-  return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-          <PieChart size={18} />
-        </div>
-
+  if (spending.length === 0 || total === 0) {
+    return (
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-white">
             Spending by category
           </h2>
 
-          <p className="mt-1 text-xs text-slate-500">
-            Your spending breakdown this month
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            See where your money is going.
           </p>
         </div>
+
+        <div className="flex min-h-56 flex-col items-center justify-center text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+            <div className="h-5 w-5 rounded-full border-4 border-slate-300 dark:border-slate-600" />
+          </div>
+
+          <p className="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
+            No spending data
+          </p>
+
+          <p className="mt-1 max-w-xs text-sm text-slate-400 dark:text-slate-500">
+            Expense activity will appear here once you start spending.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  const gradient = spending
+    .map((item, index) => {
+      const percentage = Number(item.percentage);
+
+      const start = spending
+        .slice(0, index)
+        .reduce(
+          (sum, previousItem) => sum + Number(previousItem.percentage),
+          0,
+        );
+
+      const end = start + percentage;
+
+      return `${categoryColors[index % categoryColors.length]} ${start}% ${end}%`;
+    })
+    .join(", ");
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Spending by category
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          See where your money is going.
+        </p>
       </div>
 
-      {spending.length === 0 || totalAmount <= 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-200 px-6 py-10 text-center">
-          <PieChart size={30} className="mx-auto text-slate-300" />
+      <div className="mt-6 flex flex-col items-center gap-6 sm:flex-row sm:items-center">
+        <div
+          className="relative flex h-40 w-40 shrink-0 items-center justify-center rounded-full"
+          style={{
+            background: `conic-gradient(${gradient})`,
+          }}
+        >
+          <div className="flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white dark:bg-slate-900">
+            <span className="text-xs text-slate-400 dark:text-slate-500">
+              Total
+            </span>
 
-          <p className="mt-3 text-sm font-medium text-slate-600">
-            No spending recorded
-          </p>
-
-          <p className="mt-1 text-xs text-slate-400">
-            Category spending will appear here.
-          </p>
+            <span className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+              £{total.toFixed(2)}
+            </span>
+          </div>
         </div>
-      ) : (
-        <>
-          <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-center">
-            <div className="relative shrink-0">
-              <div
-                className="h-44 w-44 rounded-full"
-                style={{ background: gradient }}
-              />
 
-              <div className="absolute inset-5 flex flex-col items-center justify-center rounded-full bg-white">
-                <span className="text-xs text-slate-500">Total</span>
+        <div className="w-full space-y-3">
+          {spending.map((item, index) => (
+            <div
+              key={item.categoryId}
+              className="flex items-center justify-between gap-3"
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <span
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{
+                    backgroundColor:
+                      categoryColors[index % categoryColors.length],
+                  }}
+                />
 
-                <strong className="mt-1 text-lg font-bold tracking-tight text-slate-900">
-                  {formatCurrency(total)}
-                </strong>
+                <span className="truncate text-sm text-slate-600 dark:text-slate-300">
+                  {item.category}
+                </span>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-2">
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  £{Number(item.amount).toFixed(2)}
+                </span>
+
+                <span className="text-xs text-slate-400 dark:text-slate-500">
+                  {Number(item.percentage).toFixed(0)}%
+                </span>
               </div>
             </div>
-
-            <div className="min-w-0 flex-1 space-y-3">
-              {segments.map((item) => (
-                <div key={item.categoryId} className="flex items-center gap-3">
-                  <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
-
-                  <span className="min-w-0 flex-1 truncate text-sm text-slate-600">
-                    {item.category}
-                  </span>
-
-                  <span className="text-xs font-semibold text-slate-500">
-                    {item.percentage.toFixed(1)}%
-                  </span>
-
-                  <span className="text-sm font-semibold text-slate-900">
-                    {formatCurrency(item.amount)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

@@ -13,7 +13,7 @@ export function LoadingMessage({
       role="status"
       aria-live="polite"
     >
-      <div className="flex items-center gap-3 text-sm text-slate-500">
+      <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
         <LoaderCircle size={18} className="animate-spin text-emerald-600" />
         <span>{message}</span>
       </div>

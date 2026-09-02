@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Lock, Mail, Moon, ShieldCheck, Sun, Wallet } from "lucide-react";
 import { useAuth } from "../features/auth/auth.context";
 import { getApiErrorMessage } from "../lib/api-error";
+import { useTheme } from "../hooks/useTheme";
 
 interface LoginLocationState {
   from?: {
@@ -14,6 +16,7 @@ export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const registered = (location.state as { registered?: boolean } | null)
     ?.registered;
@@ -29,6 +32,7 @@ export function LoginPage() {
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
+
     setError(null);
     setIsSubmitting(true);
 
@@ -57,69 +61,162 @@ export function LoginPage() {
     }
   }
 
+  const inputClassName =
+    "w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600 dark:hover:border-slate-600 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/10";
+
+  const labelClassName =
+    "mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300";
+
   return (
-    <main className="auth-page">
-      <section className="auth-card">
-        <div className="auth-header">
-          <div className="auth-logo">ET</div>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-4 py-8 dark:bg-slate-950 sm:px-6">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+        title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+        className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white sm:right-6 sm:top-6"
+      >
+        {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+      </button>
+      {/* Background decoration */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
 
-          <div>
-            <h1>Welcome back</h1>
-            <p>Sign in to manage your expenses.</p>
-          </div>
-        </div>
+        <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-emerald-400/10 blur-3xl dark:bg-emerald-400/5" />
 
-        {registered && (
-          <p className="auth-success" role="status">
-            Account created successfully. You can now log in.
-          </p>
-        )}
+        <div
+          className="absolute inset-0 opacity-40 dark:opacity-20"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgb(148 163 184 / 0.35) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+      </div>
 
-        {error && (
-          <p className="auth-error" role="alert">
-            {error}
-          </p>
-        )}
-
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="auth-field">
-            <label htmlFor="email">Email address</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              autoComplete="email"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div className="auth-field">
-            <div className="auth-field__label">
-              <label htmlFor="password">Password</label>
+      <section className="relative z-10 w-full max-w-md">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 sm:p-8">
+          {/* Brand */}
+          <div className="mb-8 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 text-lg font-extrabold tracking-tight text-white shadow-lg shadow-emerald-600/20">
+              ET
             </div>
 
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              autoComplete="current-password"
-              placeholder="Enter your password"
-            />
+            <h1 className="mt-5 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Welcome back
+            </h1>
+
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              Sign in to manage your expenses.
+            </p>
           </div>
 
-          <button className="auth-submit" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
+          {/* Registration success */}
+          {registered && (
+            <div
+              className="mb-5 flex items-start gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-400"
+              role="status"
+            >
+              <ShieldCheck size={18} className="mt-0.5 shrink-0" />
 
-        <div className="auth-footer">
-          <span>Don't have an account?</span>
-          <Link to="/register">Create an account</Link>
+              <span>Account created successfully. You can now log in.</span>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div
+              className="mb-5 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400"
+              role="alert"
+            >
+              <ShieldCheck size={18} className="mt-0.5 shrink-0" />
+
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className={labelClassName}>
+                Email address
+              </label>
+
+              <div className="relative">
+                <Mail
+                  size={18}
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+                />
+
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  disabled={isSubmitting}
+                  className={inputClassName}
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className={labelClassName}>
+                Password
+              </label>
+
+              <div className="relative">
+                <Lock
+                  size={18}
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+                />
+
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  disabled={isSubmitting}
+                  className={inputClassName}
+                />
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-emerald-600/30 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            >
+              <Wallet size={18} />
+
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-7 border-t border-slate-100 pt-5 text-center text-sm dark:border-slate-800">
+            <span className="text-slate-500 dark:text-slate-400">
+              Don't have an account?
+            </span>{" "}
+            <Link
+              to="/register"
+              className="font-semibold text-emerald-600 transition hover:text-emerald-700 hover:underline hover:underline-offset-4 dark:text-emerald-400 dark:hover:text-emerald-300"
+            >
+              Create an account
+            </Link>
+          </div>
         </div>
+
+        <p className="mt-5 text-center text-xs text-slate-400 dark:text-slate-600">
+          Your personal finances, organized in one place.
+        </p>
       </section>
     </main>
   );
