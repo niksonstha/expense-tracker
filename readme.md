@@ -2,163 +2,204 @@
 
 A full-stack personal finance application for managing accounts, transactions, transfers, categories, balances, and financial summaries.
 
-The project combines a production-oriented TypeScript/Node.js REST API with a modern React frontend designed around a clean personal-finance dashboard experience.
+The project combines a production-oriented TypeScript/Node.js REST API with a modern React frontend and PostgreSQL database, deployed using Vercel, Render, and Neon.
+
+## Live Demo
+
+**Frontend:** `https://expense-tracker-eight-nu-50.vercel.app/`
+
+**Backend API:** `https://expense-tracker-zkc7.onrender.com/`
+
+**GitHub:** `https://github.com/niksonstha/expense-tracker`
+
+> The backend root URL is an API service and does not provide a frontend interface.
 
 ## Features
 
 ### Authentication
 
-- User registration
-- User login
-- JWT-based authentication
-- Protected API routes
-- Password hashing with bcrypt
-- Authenticated user restoration
-- Protected frontend routes
+* User registration
+* User login
+* JWT-based authentication
+* Protected API routes
+* Password hashing with bcrypt
+* Authenticated user restoration
+* Protected frontend routes
 
 ### Accounts
 
-- Create accounts
-- View account details
-- Update accounts
-- Delete accounts
-- Account ownership protection
-- Account balance calculations
-- Supported account types:
-  - Bank
-  - Savings
-  - Cash
-  - Credit Card
+* Create accounts
+* View account details
+* Update accounts
+* Delete accounts
+* Account ownership protection
+* Account balance calculations
+* Supported account types:
+
+  * Bank
+  * Savings
+  * Cash
+  * Credit Card
 
 ### Transactions
 
-- Create income transactions
-- Create expense transactions
-- Update transactions
-- Delete transactions
-- View individual transactions
-- Paginated transaction listing
-- Search transactions
-- Filter by account
-- Filter by category
-- Filter by transaction type
-- Filter by date range
-- Sort by transaction date
-- Transaction ownership protection
-- Transaction loading and empty states
+* Create income transactions
+* Create expense transactions
+* Update transactions
+* Delete transactions
+* View individual transactions
+* Paginated transaction listing
+* Search transactions
+* Filter by account
+* Filter by category
+* Filter by transaction type
+* Filter by date range
+* Sort by transaction date
+* Transaction ownership protection
+* Loading and empty states
 
 ### Transfers
 
-- Transfer money between accounts
-- Creates outgoing and incoming transaction records
-- Atomic transfer operations using database transactions
-- Transfer ownership protection
-- Transfer validation
-- Transfer success and error feedback
+* Transfer money between accounts
+* Creates outgoing and incoming transaction records
+* Atomic transfer operations using database transactions
+* Transfer ownership protection
+* Transfer validation
+* Transfer success and error feedback
 
 ### Categories
 
-- Income categories
-- Expense categories
-- User-specific categories
-- Create categories
-- Edit categories
-- Delete categories
-- Category type validation
-- Category ownership protection
+* System income and expense categories
+* User-specific categories
+* Create categories
+* Edit categories
+* Delete categories
+* Category type validation
+* Category ownership protection
 
 ### Financial Summaries
 
-- Total balance
-- Total income
-- Total expenses
-- Monthly income
-- Monthly expenses
-- Monthly net balance
-- Spending by category
-- Spending percentages
+* Total balance
+* Total income
+* Total expenses
+* Monthly income
+* Monthly expenses
+* Monthly net balance
+* Spending by category
+* Spending percentages
 
 ### Dashboard
 
-- Financial summary cards
-- Account balances
-- Recent transactions
-- Current-month spending breakdown
-- Spending-by-category visualization
-- Quick expense creation
-- Loading skeletons
-- Empty states
-- Error handling
-- Success notifications
+* Financial summary cards
+* Account balances
+* Recent transactions
+* Current-month spending breakdown
+* Spending-by-category visualization
+* Quick expense creation
+* Loading skeletons
+* Empty states
+* Error handling
+* Success notifications
 
 ### Frontend UI
 
-- Modern responsive dashboard
-- React + TypeScript
-- Tailwind CSS
-- Lucide icons
-- Responsive sidebar navigation
-- Mobile navigation drawer
-- Light and dark themes
-- Theme persistence
-- Responsive transaction views
-- Reusable UI components
-- Loading states and skeletons
-- Toast notifications
-- Confirmation dialogs
-- Form validation
-- Submit loading states
-- Responsive layouts for desktop, tablet, and mobile
+* Modern responsive dashboard
+* React + TypeScript
+* Tailwind CSS
+* Lucide icons
+* Responsive sidebar navigation
+* Mobile navigation drawer
+* Light and dark themes
+* Theme persistence
+* Responsive transaction views
+* Reusable UI components
+* Loading states and skeletons
+* Toast notifications
+* Confirmation dialogs
+* Form validation
+* Submit loading states
+* Responsive layouts for desktop, tablet, and mobile
 
 ### API Security & Reliability
 
-- Helmet
-- CORS
-- Rate limiting
-- Request body size limits
-- Environment variable validation
-- Graceful server shutdown
-- PostgreSQL connection pooling
-- Centralized error handling
-- Request IDs
-- Input validation with Zod
-- Parameterized database queries through Drizzle ORM
+* Helmet
+* CORS
+* Rate limiting
+* Request body size limits
+* Environment variable validation
+* Graceful server shutdown
+* PostgreSQL connection pooling
+* Centralized error handling
+* Request IDs
+* Input validation with Zod
+* Parameterized database queries through Drizzle ORM
 
 ### Testing
 
-- Authentication tests
-- Account ownership tests
-- Transaction ownership tests
-- Transfer tests
-- Cross-user resource access prevention
-- API/business-rule validation
+* Authentication tests
+* Account ownership tests
+* Transaction ownership tests
+* Transfer tests
+* Cross-user resource access prevention
+* API and business-rule validation
 
 ## Tech Stack
 
 ### Backend
 
-- Node.js
-- TypeScript
-- Express 5
-- PostgreSQL
-- Drizzle ORM
-- Zod
-- JWT
-- bcrypt
-- Helmet
-- CORS
-- Vitest
-- Supertest
+* Node.js
+* TypeScript
+* Express 5
+* PostgreSQL
+* Drizzle ORM
+* Zod
+* JWT
+* bcrypt
+* Helmet
+* CORS
+* Vitest
+* Supertest
 
 ### Frontend
 
-- React
-- TypeScript
-- Vite
-- React Router
-- Axios
-- Tailwind CSS
-- Lucide React
+* React
+* TypeScript
+* Vite
+* React Router
+* Axios
+* Tailwind CSS
+* Lucide React
+
+### Deployment
+
+* Vercel — React frontend
+* Render — Node.js/Express backend
+* Neon — PostgreSQL database
+
+## Architecture
+
+```text
+┌─────────────────────────┐
+│       React Frontend    │
+│   React + TypeScript    │
+│       Vite + Tailwind   │
+└────────────┬────────────┘
+             │ HTTPS / REST API
+             ▼
+┌─────────────────────────┐
+│       Node.js API       │
+│   Express + TypeScript  │
+│      Drizzle ORM        │
+└────────────┬────────────┘
+             │ PostgreSQL
+             ▼
+┌─────────────────────────┐
+│       PostgreSQL        │
+│          Neon           │
+└─────────────────────────┘
+```
+
+The frontend communicates with the versioned REST API through Axios. The backend handles authentication, validation, business logic, authorization, and database operations through Drizzle ORM.
 
 ## Project Structure
 
@@ -219,14 +260,14 @@ expense-tracker/
 
 Make sure you have the following installed:
 
-- Node.js
-- npm
-- PostgreSQL
+* Node.js
+* npm
+* PostgreSQL
 
 ### Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/niksonstha/expense-tracker.git
 cd expense-tracker
 ```
 
@@ -249,11 +290,8 @@ Create a `.env` file:
 ```env
 NODE_ENV=development
 PORT=3000
-
 DATABASE_URL=your_postgresql_connection_string
-
 JWT_SECRET=your_jwt_secret
-
 FRONTEND_URL=http://localhost:5173
 ```
 
@@ -265,7 +303,7 @@ Run database migrations:
 npm run db:migrate
 ```
 
-If seed data is configured:
+Seed the system categories:
 
 ```bash
 npm run db:seed
@@ -291,7 +329,7 @@ Create a `.env` file:
 VITE_API_URL=http://localhost:3000/api/v1
 ```
 
-The frontend uses the backend API through the configured `VITE_API_URL`.
+The frontend communicates with the backend through the configured `VITE_API_URL`.
 
 ## Running the Application
 
@@ -364,6 +402,18 @@ npm run db:studio
 npm run db:seed
 ```
 
+Testing:
+
+```bash
+npm test
+```
+
+Watch mode:
+
+```bash
+npm run test:watch
+```
+
 ## API
 
 The API is versioned under:
@@ -419,7 +469,7 @@ DELETE /api/v1/categories/:id
 
 ### Dashboard
 
-The dashboard API provides financial summaries, account information, recent transactions, and spending information.
+The dashboard APIs provide financial summaries, account information, recent transactions, monthly statistics, and spending analysis.
 
 Authenticated endpoints require:
 
@@ -443,10 +493,10 @@ Users
  ├── Transfers
  │
  └── Transactions
-       │
-       ├── Account
-       ├── Category
-       └── Transfer
+        │
+        ├── Account
+        ├── Category
+        └── Transfer
 ```
 
 Transfers are represented by a transfer record and two transaction records:
@@ -456,10 +506,10 @@ Transfer
    │
    ├── OUT transaction → source account
    │
-   └── IN transaction  → destination account
+   └── IN transaction → destination account
 ```
 
-The transfer operation is performed inside a PostgreSQL database transaction to prevent partial transfers and keep account balances consistent.
+The transfer operation is performed inside a PostgreSQL database transaction to prevent partial transfers and maintain consistent account balances.
 
 ## Testing
 
@@ -475,14 +525,16 @@ Run tests in watch mode:
 npm run test:watch
 ```
 
-The tests cover important security and business rules including:
+The test suite covers important security and business rules including:
 
-- Authentication
-- Account ownership
-- Transaction ownership
-- Transfer creation
-- Cross-user resource access prevention
-- Validation and error handling
+* Authentication
+* Account ownership
+* Transaction ownership
+* Transfer creation
+* Cross-user resource access prevention
+* Validation
+* Error handling
+* Business-rule enforcement
 
 ## Environment Variables
 
@@ -512,88 +564,75 @@ Make sure environment files are included in `.gitignore`.
 
 The application includes several security measures:
 
-- Passwords are never stored as plain text.
-- JWT authentication protects private routes.
-- Resources are scoped to the authenticated user.
-- Zod validates incoming data.
-- Rate limiting protects API endpoints.
-- Helmet adds HTTP security headers.
-- CORS restricts frontend access.
-- Request body size is limited.
-- Database operations use parameterized queries through Drizzle ORM.
-- Multi-step transfer operations use PostgreSQL transactions.
-- Ownership checks prevent users from accessing another user's resources.
+* Passwords are never stored as plain text
+* Passwords are hashed using bcrypt
+* JWT authentication protects private routes
+* Resources are scoped to the authenticated user
+* Zod validates incoming data
+* Rate limiting protects API endpoints
+* Helmet adds HTTP security headers
+* CORS restricts frontend access
+* Request body size is limited
+* Database operations use parameterized queries through Drizzle ORM
+* Multi-step transfer operations use PostgreSQL transactions
+* Ownership checks prevent users from accessing another user's resources
 
-## Development Roadmap
+## Completed Development
 
 ### Backend
 
-- [x] Authentication
-- [x] Accounts
-- [x] Transactions
-- [x] Categories
-- [x] Account balances
-- [x] Account-to-account transfers
-- [x] Database transactions
-- [x] Financial summaries
-- [x] Dashboard APIs
-- [x] Monthly financial summaries
-- [x] Spending analysis
-- [x] Automated tests
-- [x] Production hardening
+* [x] Authentication
+* [x] Accounts
+* [x] Transactions
+* [x] Categories
+* [x] Account balances
+* [x] Account-to-account transfers
+* [x] Database transactions
+* [x] Financial summaries
+* [x] Dashboard APIs
+* [x] Monthly financial summaries
+* [x] Spending analysis
+* [x] Automated tests
+* [x] Production hardening
+* [x] Production deployment
 
 ### Frontend
 
-- [x] React application
-- [x] Authentication UI
-- [x] Login/Register
-- [x] Protected routes
-- [x] Dashboard
-- [x] Account management
-- [x] Transaction management
-- [x] Transfer management
-- [x] Categories
-- [x] Financial summaries
-- [x] Spending visualization
-- [x] Loading and error states
-- [x] Toast notifications
-- [x] Confirmation dialogs
-- [x] Responsive design
-- [x] Dark mode
-- [x] Mobile navigation
-- [x] UI polish and responsive improvements
+* [x] React application
+* [x] Authentication UI
+* [x] Login/Register
+* [x] Protected routes
+* [x] Dashboard
+* [x] Account management
+* [x] Transaction management
+* [x] Transfer management
+* [x] Categories
+* [x] Financial summaries
+* [x] Spending visualization
+* [x] Loading and error states
+* [x] Toast notifications
+* [x] Confirmation dialogs
+* [x] Responsive design
+* [x] Dark mode
+* [x] Mobile navigation
+* [x] UI polish and responsive improvements
+* [x] Production deployment
 
-### Planned
+## Planned Improvements
 
-- [ ] Budget management
-- [ ] Advanced analytics
-- [ ] Recurring transactions
-- [ ] CSV import/export
-- [ ] CSV/PDF financial reports
-- [ ] Refresh tokens
-- [ ] Email verification
-- [ ] Password reset
-- [ ] Notifications
-- [ ] CI/CD deployment
-- [ ] Automated database backups
-
-## Future Improvements
-
-Possible future improvements include:
-
-- Budget tracking and spending limits
-- More detailed analytics and reporting
-- Recurring transactions
-- CSV import/export
-- PDF financial reports
-- Refresh-token authentication
-- Email verification
-- Password reset
-- Notifications
-- CI/CD deployment
-- Automated database backups
-- Production deployment and monitoring
+* [ ] Budget management
+* [ ] Advanced analytics
+* [ ] Recurring transactions
+* [ ] CSV import/export
+* [ ] PDF financial reports
+* [ ] Refresh-token authentication
+* [ ] Email verification
+* [ ] Password reset
+* [ ] Notifications
+* [ ] CI/CD pipeline
+* [ ] Automated database backups
+* [ ] Production monitoring
 
 ## License
 
-This project is currently developed for learning and personal development purposes.
+This project is currently developed for learning, portfolio development, and personal development purposes.
