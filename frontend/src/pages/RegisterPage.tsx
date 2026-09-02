@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../features/auth/auth.api";
@@ -15,10 +15,19 @@ export function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    document.getElementById("name")?.focus();
+  }, []);
+
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
     setError(null);
+
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+      setError("All fields are required.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -29,8 +38,8 @@ export function RegisterPage() {
 
     try {
       await registerUser({
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim(),
         password,
       });
 

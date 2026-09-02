@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import {
   deleteAccount,
@@ -14,35 +15,7 @@ export function AccountsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
-
-  async function handleDelete(account: Account) {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${account.name}"?`,
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      setError(null);
-
-      await deleteAccount(account.id);
-
-      if (editingAccount?.id === account.id) {
-        setEditingAccount(null);
-      }
-
-      await loadAccounts();
-    } catch (error) {
-      setError(
-        getApiErrorMessage(
-          error,
-          "Unable to delete account. Please try again.",
-        ),
-      );
-    }
-  }
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   async function loadAccounts() {
     try {
@@ -62,33 +35,96 @@ export function AccountsPage() {
     void loadAccounts();
   }, []);
 
+  async function handleDelete(account: Account) {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${account.name}"?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError(null);
+
+      await deleteAccount(account.id);
+
+      if (editingAccount?.id === account.id) {
+        setEditingAccount(null);
+        setIsFormOpen(false);
+      }
+
+      await loadAccounts();
+    } catch (error) {
+      setError(
+        getApiErrorMessage(
+          error,
+          "Unable to delete account. Please try again.",
+        ),
+      );
+    }
+  }
+
+  function handleAddAccount() {
+    setEditingAccount(null);
+    setIsFormOpen(true);
+  }
+
+  function handleEditAccount(account: Account) {
+    setEditingAccount(account);
+    setIsFormOpen(true);
+  }
+
+  function handleCancelForm() {
+    setEditingAccount(null);
+    setIsFormOpen(false);
+  }
+
   if (isLoading) {
     return <p>Loading accounts...</p>;
   }
 
   return (
-    <Card className="page">
-      <div className="page__header">
+    <div className="page">
+      <div className="page-header">
         <div>
-          <h2>Accounts</h2>
+          <h1>Accounts</h1>
           <p>Manage your financial accounts.</p>
         </div>
+
+        {!isFormOpen && (
+          <Button type="button" onClick={handleAddAccount}>
+            Add Account
+          </Button>
+        )}
       </div>
 
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      )}
 
-      <AccountForm
-        account={editingAccount}
-        onSaved={async () => {
-          await loadAccounts();
-          setEditingAccount(null);
-        }}
-        onCancel={() => setEditingAccount(null)}
-      />
+      {isFormOpen && (
+        <Card>
+          <AccountForm
+            account={editingAccount}
+            onSaved={async () => {
+              await loadAccounts();
+              setEditingAccount(null);
+              setIsFormOpen(false);
+            }}
+            onCancel={handleCancelForm}
+          />
+        </Card>
+      )}
 
       <Card className="dashboard-section">
         <div className="dashboard-section__header">
-          <h2>Your Accounts</h2>
+          <div>
+            <h2>Your Accounts</h2>
+            <p>View and manage your financial accounts.</p>
+          </div>
         </div>
 
         {accounts.length === 0 ? (
@@ -109,7 +145,7 @@ export function AccountsPage() {
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => setEditingAccount(account)}
+                      onClick={() => handleEditAccount(account)}
                     >
                       Edit
                     </Button>
@@ -128,6 +164,6 @@ export function AccountsPage() {
           </div>
         )}
       </Card>
-    </Card>
+    </div>
   );
 }

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { getDashboard, type Dashboard } from "../features/dashboard/dashboard.api";
+import {
+  getDashboard,
+  type Dashboard,
+} from "../features/dashboard/dashboard.api";
 import { getApiErrorMessage } from "../lib/api-error";
 import { StatCard } from "../components/ui/StatCard";
 import { AccountList } from "../features/dashboard/AccountList";
 import { RecentTransactions } from "../features/dashboard/RecentTransactions";
 import { SpendingByCategory } from "../features/dashboard/SpendingByCategory";
-
-
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
@@ -16,10 +17,12 @@ export function DashboardPage() {
   useEffect(() => {
     async function loadDashboard() {
       try {
+        setError(null);
+
         const response = await getDashboard();
 
         setDashboard(response.dashboard);
-      } catch {
+      } catch (error) {
         setError(getApiErrorMessage(error, "Unable to load dashboard."));
       } finally {
         setIsLoading(false);
@@ -27,7 +30,7 @@ export function DashboardPage() {
     }
 
     void loadDashboard();
-  }, [error]);
+  }, []);
 
   if (isLoading) {
     return <p>Loading dashboard...</p>;
@@ -45,7 +48,7 @@ export function DashboardPage() {
     <section className="dashboard">
       <div className="dashboard__heading">
         <div>
-          <h2>Dashboard</h2>
+          <h1>Dashboard</h1>
 
           <p>
             {new Date(
@@ -73,6 +76,14 @@ export function DashboardPage() {
         <StatCard
           title="Total Expenses"
           value={`£${dashboard.summary.totalExpense}`}
+        />
+
+        <StatCard
+          title="Net This Month"
+          value={`£${(
+            Number(dashboard.summary.totalIncome) -
+            Number(dashboard.summary.totalExpense)
+          ).toFixed(2)}`}
         />
       </div>
 

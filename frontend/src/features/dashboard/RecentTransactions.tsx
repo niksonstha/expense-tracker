@@ -4,6 +4,17 @@ interface RecentTransactionsProps {
   transactions: DashboardTransaction[];
 }
 
+function formatTransactionType(type: DashboardTransaction["type"]) {
+  return type.charAt(0) + type.slice(1).toLowerCase();
+}
+
+function formatCurrency(amount: string) {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(Number(amount));
+}
+
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   return (
     <section className="dashboard-section">
@@ -18,9 +29,18 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
           {transactions.map((transaction) => (
             <article className="transaction-row" key={transaction.id}>
               <div>
-                <h3>{transaction.description ?? transaction.type}</h3>
+                <h3>
+                  {transaction.description ??
+                    formatTransactionType(transaction.type)}
+                </h3>
 
-                <p>{transaction.type}</p>
+                <p>
+                  {formatTransactionType(transaction.type)}
+                  {" · "}
+                  {new Date(transaction.transactionDate).toLocaleDateString(
+                    "en-GB",
+                  )}
+                </p>
               </div>
 
               <strong
@@ -30,8 +50,8 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
                     : "transaction-amount transaction-amount--expense"
                 }
               >
-                {transaction.direction === "IN" ? "+" : "-"}£
-                {transaction.amount}
+                {transaction.direction === "IN" ? "+" : "-"}
+                {formatCurrency(transaction.amount)}
               </strong>
             </article>
           ))}

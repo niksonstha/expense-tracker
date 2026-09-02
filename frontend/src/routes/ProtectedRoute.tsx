@@ -6,7 +6,7 @@ export function ProtectedRoute() {
   const location = useLocation();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Checking your session...</div>;
   }
 
   if (!isAuthenticated) {

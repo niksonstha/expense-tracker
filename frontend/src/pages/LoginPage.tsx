@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/auth.context";
 import { getApiErrorMessage } from "../lib/api-error";
-
 
 interface LoginLocationState {
   from?: {
@@ -26,15 +25,25 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    document.getElementById("email")?.focus();
+  }, []);
+
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
     setError(null);
     setIsSubmitting(true);
 
+    if (!email.trim() || !password) {
+      setError("Email and password are required.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       await login({
-        email,
+        email: email.trim(),
         password,
       });
 

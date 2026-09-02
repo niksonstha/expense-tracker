@@ -19,6 +19,13 @@ interface AccountFormProps {
 
 const accountTypes: AccountType[] = ["BANK", "SAVINGS", "CASH", "CREDIT_CARD"];
 
+function formatAccountType(type: AccountType) {
+  return type
+    .replace("_", " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 export function AccountForm({ account, onSaved, onCancel }: AccountFormProps) {
   const isEditing = account !== null && account !== undefined;
 
@@ -44,16 +51,24 @@ export function AccountForm({ account, onSaved, onCancel }: AccountFormProps) {
     setError(null);
     setIsSubmitting(true);
 
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      setError("Account name is required.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       if (isEditing) {
         await updateAccount(account.id, {
-          name,
+          name: trimmedName,
           type,
           initialBalance: Number(initialBalance),
         });
       } else {
         await createAccount({
-          name,
+          name: trimmedName,
           type,
           initialBalance: Number(initialBalance),
         });
@@ -92,6 +107,7 @@ export function AccountForm({ account, onSaved, onCancel }: AccountFormProps) {
             value={name}
             onChange={(event) => setName(event.target.value)}
             required
+            autoComplete="off"
           />
         </div>
 
@@ -105,7 +121,7 @@ export function AccountForm({ account, onSaved, onCancel }: AccountFormProps) {
           >
             {accountTypes.map((accountType) => (
               <option key={accountType} value={accountType}>
-                {accountType}
+                {formatAccountType(accountType)}
               </option>
             ))}
           </select>
@@ -118,6 +134,7 @@ export function AccountForm({ account, onSaved, onCancel }: AccountFormProps) {
             id="initial-balance"
             type="number"
             step="0.01"
+            inputMode="decimal"
             value={initialBalance}
             onChange={(event) => setInitialBalance(event.target.value)}
             required

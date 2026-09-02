@@ -9,6 +9,7 @@ import { AppLayout } from "../layouts/AppLayout";
 import { CategoriesPage } from "../pages/CategoriesPage";
 import { AccountsPage } from "../pages/AccountsPage";
 import { TransactionsPage } from "../pages/TransactionsPage";
+import { TransfersPage } from "../pages/TransfersPage";
 
 export function AppRouter() {
   return (
@@ -23,6 +24,7 @@ export function AppRouter() {
             <Route path="/accounts" element={<AccountsPage />} />
             <Route path="/transactions" element={<TransactionsPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/transfers" element={<TransfersPage />} />
           </Route>
         </Route>
 

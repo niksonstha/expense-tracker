@@ -15,6 +15,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
+      type="button"
       className={`button button--${variant} ${className}`.trim()}
       {...props}
     >

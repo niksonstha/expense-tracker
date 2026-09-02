@@ -4,6 +4,13 @@ interface AccountListProps {
   accounts: DashboardAccount[];
 }
 
+function formatAccountType(type: DashboardAccount["type"]) {
+  return type
+    .replace("_", " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 export function AccountList({ accounts }: AccountListProps) {
   return (
     <section className="dashboard-section">
@@ -19,10 +26,10 @@ export function AccountList({ accounts }: AccountListProps) {
             <article className="account-card" key={account.id}>
               <div>
                 <h3>{account.name}</h3>
-                <p>{account.type}</p>
+                <p>{formatAccountType(account.type)}</p>
               </div>
 
-              <strong>£{account.balance}</strong>
+              <strong>£{Number(account.balance).toFixed(2)}</strong>
             </article>
           ))}
         </div>

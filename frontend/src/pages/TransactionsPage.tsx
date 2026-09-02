@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect, useState } from "react";
@@ -29,38 +30,10 @@ export function TransactionsPage() {
   const [editingTransaction, setEditingTransaction] = useState<
     Transaction | undefined
   >(undefined);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [typeFilter, setTypeFilter] = useState<"ALL" | "INCOME" | "EXPENSE">(
     "ALL",
   );
-
-  async function handleDelete(transaction: Transaction) {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this transaction?",
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await deleteTransaction(transaction.id);
-
-      const nextPage =
-        transactions.length === 1 && currentPage > 1
-          ? currentPage - 1
-          : currentPage;
-
-      setCurrentPage(nextPage);
-      await loadTransactions(nextPage);
-    } catch (error) {
-      setError(
-        getApiErrorMessage(
-          error,
-          "Unable to delete transaction. Please try again.",
-        ),
-      );
-    }
-  }
 
   async function loadTransactions(page: number) {
     try {
@@ -82,7 +55,6 @@ export function TransactionsPage() {
       setTransactions(transactionsResponse.transactions);
       setAccounts(accountsResponse.accounts);
       setCategories(categoriesResponse.categories);
-
       setCurrentPage(transactionsResponse.pagination.page);
       setTotalPages(transactionsResponse.pagination.totalPages);
       setHasNextPage(transactionsResponse.pagination.hasNextPage);
@@ -98,52 +70,114 @@ export function TransactionsPage() {
     void loadTransactions(1);
   }, [typeFilter]);
 
+  async function handleDelete(transaction: Transaction) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this transaction?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError(null);
+
+      await deleteTransaction(transaction.id);
+
+      const nextPage =
+        transactions.length === 1 && currentPage > 1
+          ? currentPage - 1
+          : currentPage;
+
+      setCurrentPage(nextPage);
+      await loadTransactions(nextPage);
+    } catch (error) {
+      setError(
+        getApiErrorMessage(
+          error,
+          "Unable to delete transaction. Please try again.",
+        ),
+      );
+    }
+  }
+
+  function handleAddTransaction() {
+    setEditingTransaction(undefined);
+    setIsFormOpen(true);
+  }
+
+  function handleEditTransaction(transaction: Transaction) {
+    setEditingTransaction(transaction);
+    setIsFormOpen(true);
+  }
+
+  function handleCancelForm() {
+    setEditingTransaction(undefined);
+    setIsFormOpen(false);
+  }
+
   return (
-    <Card className="page">
-      <div className="page__header">
+    <div className="page">
+      <div className="page-header">
         <div>
-          <h2>Transactions</h2>
+          <h1>Transactions</h1>
           <p>Manage your income and expenses.</p>
         </div>
+
+        {!isFormOpen && (
+          <Button type="button" onClick={handleAddTransaction}>
+            Add Transaction
+          </Button>
+        )}
       </div>
 
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      )}
 
-      <TransactionForm
-        transaction={editingTransaction}
-        onSaved={async () => {
-          setEditingTransaction(undefined);
-          await loadTransactions(currentPage);
-        }}
-        onCancel={() => {
-          setEditingTransaction(undefined);
-        }}
-      />
+      {isFormOpen && (
+        <Card>
+          <TransactionForm
+            transaction={editingTransaction}
+            onSaved={async () => {
+              setEditingTransaction(undefined);
+              setIsFormOpen(false);
+              await loadTransactions(currentPage);
+            }}
+            onCancel={handleCancelForm}
+          />
+        </Card>
+      )}
 
       <Card className="dashboard-section">
         <div className="dashboard-section__header">
-          <h2>Recent Transactions</h2>
-        </div>
+          <div>
+            <h2>Recent Transactions</h2>
+            <p>View and manage your transaction history.</p>
+          </div>
 
-        <div className="form-field">
-          <label htmlFor="transaction-type-filter">Type</label>
+          <div className="form-field">
+            <label htmlFor="transaction-type-filter">Type</label>
+            <select
+              id="transaction-type-filter"
+              value={typeFilter}
+              onChange={(event) => {
+                const value = event.target.value as
+                  | "ALL"
+                  | "INCOME"
+                  | "EXPENSE";
 
-          <select
-            id="transaction-type-filter"
-            value={typeFilter}
-            onChange={(event) => {
-              const value = event.target.value as "ALL" | "INCOME" | "EXPENSE";
-
-              setTypeFilter(value);
-              setCurrentPage(1);
-
-              void loadTransactions(1);
-            }}
-          >
-            <option value="ALL">All</option>
-            <option value="INCOME">Income</option>
-            <option value="EXPENSE">Expense</option>
-          </select>
+                setTypeFilter(value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="ALL">All</option>
+              <option value="INCOME">Income</option>
+              <option value="EXPENSE">Expense</option>
+            </select>
+          </div>
         </div>
 
         {isLoading ? (
@@ -175,31 +209,29 @@ export function TransactionsPage() {
                     </p>
                   </div>
 
-                  <div>
-                    <div className="transaction-row__actions">
-                      <strong
-                        className={
-                          transaction.direction === "IN"
-                            ? "transaction-amount transaction-amount--income"
-                            : "transaction-amount transaction-amount--expense"
-                        }
-                      >
-                        {transaction.direction === "IN" ? "+" : "-"}£
-                        {transaction.amount}
-                      </strong>
+                  <div className="transaction-row__right">
+                    <strong
+                      className={
+                        transaction.direction === "IN"
+                          ? "transaction-amount transaction-amount--income"
+                          : "transaction-amount transaction-amount--expense"
+                      }
+                    >
+                      {transaction.direction === "IN" ? "+" : "-"}£
+                      {transaction.amount}
+                    </strong>
 
+                    <div className="transaction-row__actions">
                       {transaction.type !== "TRANSFER" && (
                         <Button
                           type="button"
                           variant="secondary"
-                          onClick={() => setEditingTransaction(transaction)}
+                          onClick={() => handleEditTransaction(transaction)}
                         >
                           Edit
                         </Button>
                       )}
-                    </div>
 
-                    <div className="transaction-row__actions">
                       <Button
                         type="button"
                         variant="danger"
@@ -243,6 +275,6 @@ export function TransactionsPage() {
           </div>
         )}
       </Card>
-    </Card>
+    </div>
   );
 }

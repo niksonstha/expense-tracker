@@ -5,6 +5,13 @@ interface SpendingByCategoryProps {
   total: string;
 }
 
+function formatCurrency(amount: string) {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(Number(amount));
+}
+
 export function SpendingByCategory({
   spending,
   total,
@@ -20,7 +27,7 @@ export function SpendingByCategory({
       ) : (
         <>
           <p className="spending-total">
-            Total: <strong>£{total}</strong>
+            Total: <strong>{formatCurrency(total)}</strong>
           </p>
 
           <div className="spending-list">
@@ -29,19 +36,21 @@ export function SpendingByCategory({
                 <div className="spending-row__info">
                   <span>{item.category}</span>
 
-                  <strong>{item.percentage}%</strong>
+                  <strong>{Number(item.percentage).toFixed(1)}%</strong>
                 </div>
 
                 <div className="spending-bar">
                   <div
                     className="spending-bar__fill"
                     style={{
-                      width: `${item.percentage}%`,
+                      width: `${Math.min(Math.max(Number(item.percentage), 0), 100)}%`,
                     }}
                   />
                 </div>
 
-                <span className="spending-row__amount">£{item.amount}</span>
+                <span className="spending-row__amount">
+                  {formatCurrency(item.amount)}
+                </span>
               </div>
             ))}
           </div>

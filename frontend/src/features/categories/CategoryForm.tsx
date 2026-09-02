@@ -30,11 +30,12 @@ export function CategoryForm({
     if (!category) {
       setName("");
       setType("EXPENSE");
-      return;
+    } else {
+      setName(category.name);
+      setType(category.type);
     }
 
-    setName(category.name);
-    setType(category.type);
+    document.getElementById("category-name")?.focus();
   }, [category]);
 
   async function handleSubmit(event: SubmitEvent) {
@@ -43,15 +44,23 @@ export function CategoryForm({
     setError(null);
     setIsSubmitting(true);
 
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      setError("Category name is required.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       if (category) {
         await updateCategory(category.id, {
-          name: name.trim(),
+          name: trimmedName,
           type,
         });
       } else {
         await createCategory({
-          name: name.trim(),
+          name: trimmedName,
           type,
         });
       }
@@ -77,28 +86,26 @@ export function CategoryForm({
 
       {error && <p className="form-error">{error}</p>}
 
-      <label>
-        Name
-        <input
-          type="text"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="e.g. Groceries"
-          maxLength={100}
-          required
-        />
-      </label>
+      <label htmlFor="category-name">Name</label>
+      <input
+        id="category-name"
+        type="text"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        placeholder="e.g. Groceries"
+        maxLength={100}
+        required
+      />
 
-      <label>
-        Type
-        <select
-          value={type}
-          onChange={(event) => setType(event.target.value as CategoryType)}
-        >
-          <option value="EXPENSE">Expense</option>
-          <option value="INCOME">Income</option>
-        </select>
-      </label>
+      <label htmlFor="category-type">Type</label>
+      <select
+        id="category-type"
+        value={type}
+        onChange={(event) => setType(event.target.value as CategoryType)}
+      >
+        <option value="EXPENSE">Expense</option>
+        <option value="INCOME">Income</option>
+      </select>
 
       <div>
         <Button type="submit" disabled={isSubmitting}>

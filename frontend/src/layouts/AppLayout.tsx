@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../features/auth/auth.context";
 
@@ -14,18 +14,20 @@ export function AppLayout() {
             Expense Tracker
           </Link>
 
-          <nav className="app-nav">
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/accounts">Accounts</Link>
-            <Link to="/transactions">Transactions</Link>
-            <Link to="/categories">Categories</Link>
+          <nav className="app-nav" aria-label="Main navigation">
+            <NavLink to="/dashboard">Dashboard</NavLink>
+            <NavLink to="/accounts">Accounts</NavLink>
+            <NavLink to="/transactions">Transactions</NavLink>
+            <NavLink to="/categories">Categories</NavLink>
+            <NavLink to="/transfers">Transfers</NavLink>
           </nav>
 
           <div className="app-user">
-            <span>Welcome, {user?.name}</span>
+            <span>Welcome, {user?.name ?? "User"}</span>
 
             <button
               type="button"
+              aria-label="Log out of your account"
               onClick={() => {
                 logout();
                 navigate("/login", { replace: true });

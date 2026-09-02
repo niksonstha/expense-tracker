@@ -35,6 +35,14 @@ a {
   text-decoration: none;
 }
 
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #374151;
+  outline-offset: 2px;
+}
+
 ul {
   margin: 0;
   padding: 0;
@@ -73,6 +81,10 @@ ul {
 .app-nav a {
   color: #6b7280;
   font-weight: 500;
+}
+
+.app-nav a.active {
+  font-weight: 600;
 }
 
 .app-nav a:hover {
@@ -132,7 +144,7 @@ ul {
 
 .dashboard__stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -155,8 +167,8 @@ ul {
   font-weight: 500;
 }
 
-.stat-card p {
-  margin: 0;
+.stat-card strong {
+  display: block;
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -224,6 +236,24 @@ ul {
 
   padding: 14px 0;
   border-bottom: 1px solid #e5e7eb;
+}
+
+.transaction-row__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.transaction-row__actions button {
+  margin: 0;
+}
+
+.transaction-row__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .transaction-row:last-child {
@@ -363,25 +393,14 @@ ul {
     flex-wrap: wrap;
   }
 
-  .transaction-amount {
+  .transaction-row__right {
     width: 100%;
+    align-items: flex-start;
   }
-}
 
-.page {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.page__header h2 {
-  margin: 0;
-  font-size: 1.75rem;
-}
-
-.page__header p {
-  margin: 4px 0 0;
-  color: #6b7280;
+  .transaction-row__actions {
+    justify-content: flex-start;
+  }
 }
 
 .form-section {
@@ -448,7 +467,6 @@ ul {
 
 .form button:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
 .form-error {
